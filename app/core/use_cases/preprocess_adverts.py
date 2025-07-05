@@ -2,11 +2,12 @@ import random
 from collections import defaultdict
 from typing import Iterable
 
+from app.core.contracts.use_case_contract import UseCaseContract
 from app.core.domain.advert import Advert
-from app.core.domain.advert_raw import AdvertRaw
+from app.core.dto.advert_raw import AdvertRaw
 
 
-class PreprocessAdvertsUseCase:
+class PreprocessAdvertsUseCase(UseCaseContract):
     def __init__(self, raw_adverts: list[AdvertRaw]) -> None:
         self._raw_adverts = raw_adverts
 

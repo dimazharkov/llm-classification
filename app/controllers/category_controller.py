@@ -2,7 +2,7 @@ from typing import Dict, Iterable
 
 from app.core.domain.advert import Advert
 from app.core.domain.category import Category
-from app.core.domain.category_raw import CategoryRaw
+from app.core.dto.category_raw import CategoryRaw
 from app.core.use_cases.build_category_bow import BuildCategoryBowUseCase
 from app.core.use_cases.preprocess_categories import PreprocessCategoriesUseCase
 from app.helpers.os_helper import load_from_disc, save_to_disc

@@ -1,12 +1,13 @@
 from typing import Iterable
 
 from app.core.contracts.llm_client_contract import LLMClientContract
+from app.core.contracts.use_case_contract import UseCaseContract
 from app.core.domain.advert import Advert
 from app.core.helpers.prompt_helper import format_prompt
 from app.core.prompts.advert_summarize_prompt import advert_summarize_prompt
 
 
-class SummarizeAdvertUseCase:
+class SummarizeAdvertUseCase(UseCaseContract):
     def __init__(self, llm: LLMClientContract) -> None:
         self.llm = llm
 
