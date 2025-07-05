@@ -1,10 +1,11 @@
 from typing import Iterable, Dict
 
+from app.core.contracts.use_case_contract import UseCaseContract
 from app.core.domain.category import Category
-from app.core.domain.category_raw import CategoryRaw
+from app.core.dto.category_raw import CategoryRaw
 
 
-class PreprocessCategoriesUseCase:
+class PreprocessCategoriesUseCase(UseCaseContract):
     def __init__(self, advert_categories: Dict[int, CategoryRaw]) -> None:
         self._advert_categories = advert_categories
 

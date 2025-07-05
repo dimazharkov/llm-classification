@@ -3,7 +3,7 @@ from typing import Iterable
 
 from app.core.contracts.llm_client_contract import LLMClientContract
 from app.core.domain.advert import Advert
-from app.core.domain.advert_raw import AdvertRaw
+from app.core.dto.advert_raw import AdvertRaw
 from app.core.use_cases.preprocess_adverts import PreprocessAdvertsUseCase
 from app.core.use_cases.summarize_advert import SummarizeAdvertUseCase
 from app.helpers.os_helper import load_from_disc, save_to_disc
