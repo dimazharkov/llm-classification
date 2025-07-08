@@ -9,8 +9,8 @@ app = typer.Typer()
 
 @app.command()
 def summarize(
-        source_path: str = typer.Option(..., help="Путь для чтения"),
-        target_path: str = typer.Option(..., help="Путь для сохранения"),
+        source_path: str = typer.Option("raw_categories.json", help="Путь для чтения"),
+        target_path: str = typer.Option("categories.json", help="Путь для сохранения"),
 ):
     llm_client = GeminiClient()
     AdvertController().summarize(
@@ -19,13 +19,11 @@ def summarize(
 
 @app.command()
 def preprocess(
-        source_path: str = typer.Option(..., help="Путь для чтения"),
-        target_path: str = typer.Option(..., help="Путь для сохранения"),
-        per_category: int = typer.Option(..., help="Объявлений на категорию"),
-        selected_ids: List[int] = typer.Argument(None, help="ID категорий, например: 11239 11243 595")
-
+        source_path: str = typer.Option("/source/adverts.json", help="Путь для чтения"),
+        target_path: str = typer.Option("raw_adverts.json", help="Путь для сохранения"),
+        per_category: int = typer.Option(30, help="Объявлений на категорию"),
+        selected_ids: List[int] = typer.Option([11239, 11243, 595, 596, 597, 599, 11251, 722, 723, 729, 822, 823, 826, 827, 1073], help="Список ID категорий, например: 11239 11243 595")
     ):
     AdvertController().preprocess(
         source_path, target_path, per_category, list(selected_ids)
     )
-
