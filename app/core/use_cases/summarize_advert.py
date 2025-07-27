@@ -1,5 +1,3 @@
-from typing import Iterable
-
 from app.core.contracts.llm_client_contract import LLMClientContract
 from app.core.contracts.use_case_contract import UseCaseContract
 from app.core.domain.advert import Advert
@@ -12,14 +10,9 @@ class SummarizeAdvertUseCase(UseCaseContract):
         self.llm = llm
 
     def run(self, advert: Advert) -> Advert:
-        prompt = format_prompt(
-            advert_summarize_prompt,
-            title=advert.advert_title,
-            text=advert.advert_text
-        )
+        prompt = format_prompt(advert_summarize_prompt, title=advert.advert_title, text=advert.advert_text)
 
         summary = self.llm.generate(prompt)
+        summarized_advert: Advert = advert.model_copy(update={"advert_summary": summary})
 
-        return advert.model_copy(
-            update={"advert_summary": summary}
-        )
+        return summarized_advert

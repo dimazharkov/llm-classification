@@ -1,6 +1,6 @@
 import random
 from collections import defaultdict
-from typing import Iterable
+from collections.abc import Iterable
 
 from app.core.contracts.use_case_contract import UseCaseContract
 from app.core.domain.advert import Advert
@@ -18,7 +18,7 @@ class PreprocessAdvertsUseCase(UseCaseContract):
         random.shuffle(self._raw_adverts)
 
         result = []
-        category_counter = defaultdict(int)
+        category_counter: defaultdict[int, int] = defaultdict(int)
 
         for raw in self._raw_adverts:
             if categories_ids is not None and raw.category_id not in categories_ids:
@@ -31,7 +31,7 @@ class PreprocessAdvertsUseCase(UseCaseContract):
                 category_id=raw.category_id,
                 category_title=raw.category_title,
                 advert_title=raw.title,
-                advert_text=raw.text
+                advert_text=raw.text,
             )
             result.append(advert)
             category_counter[raw.category_id] += 1

@@ -1,19 +1,16 @@
-from typing import Optional
-
 from app.core.domain.category import Category
 from app.helpers.os_helper import load_from_disc
 
 
-class CategoryFileRepository():
-    def __init__(self, path: str):
+class CategoryFileRepository:
+    def __init__(self, path: str) -> None:
         self.data: list[Category] = self._load(path)
         self.title_index: dict[str, Category] = {cat.title: cat for cat in self.data}
-
 
     def get(self) -> list[Category]:
         return self.data
 
-    def get_category_by_title(self, title: str) -> Optional[Category]:
+    def get_category_by_title(self, title: str) -> Category | None:
         return self.title_index.get(title)
 
     def _load(self, path: str) -> list[Category]:

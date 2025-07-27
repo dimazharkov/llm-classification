@@ -1,4 +1,4 @@
-from typing import Dict, Iterable
+from collections.abc import Iterable
 
 from app.core.domain.advert import Advert
 from app.core.domain.category import Category
@@ -11,7 +11,7 @@ from app.helpers.os_helper import load_from_disc, save_to_disc
 class CategoryController:
     def preprocess(self, source_path: str, target_path: str, selected_ids: Iterable[int] = None) -> None:
         raw = load_from_disc(source_path)
-        parsed: Dict[int, CategoryRaw] = {int(cid): CategoryRaw.model_validate(cat) for cid, cat in raw.items()}
+        parsed: dict[int, CategoryRaw] = {int(cid): CategoryRaw.model_validate(cat) for cid, cat in raw.items()}
 
         processed = PreprocessCategoriesUseCase(parsed).run(selected_ids)
 
@@ -29,4 +29,3 @@ class CategoryController:
 
         payload = [category_with_bow.model_dump(mode="json") for category_with_bow in categories_with_bow]
         save_to_disc(payload, target_path)
-

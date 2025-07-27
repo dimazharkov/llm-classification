@@ -1,14 +1,12 @@
-from typing import Optional
-
 import typer
 
 from app.core.domain.category import Category
 from app.core.dto.category_prediction import AdvertCategoryPrediction
-from app.core.use_cases.predict_five_categories import PredictFiveCategoriesUseCase
 from app.infrastructure.di import Container
 from app.repositories.category_pair_diff_repository import CategoryPairDiffRepository
 
 app = typer.Typer()
+
 
 def init_container():
     container = Container()
@@ -37,7 +35,11 @@ def ex_three():
     print(category_pair_diff_repo.all())
 
     pairwise_classification_use_case = container.pairwise_classification_use_case()
-    advert_category_prediction: Optional[AdvertCategoryPrediction] = pairwise_classification_use_case.run(advert, category_pair_diff_repo, rate_limit=1)
+    advert_category_prediction: AdvertCategoryPrediction | None = pairwise_classification_use_case.run(
+        advert,
+        category_pair_diff_repo,
+        rate_limit=1,
+    )
 
     print("advert_category_prediction -----")
     print(advert_category_prediction)

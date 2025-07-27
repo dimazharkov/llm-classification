@@ -1,23 +1,29 @@
 import time
+from typing import Any
 
 import openai
 import tiktoken
-from openai import RateLimitError, OpenAIError
+from openai import OpenAIError, RateLimitError
 
 from app.config import config
 from app.core.contracts.llm_client_contract import LLMClientContract
 
 
 class OpenAIClient(LLMClientContract):
-    def __init__(self, model_name: str = "gpt-4.1-mini", temperature: float = 0.1, max_tokens: int = 200):
+    def __init__(
+        self,
+        model_name: str = "gpt-4.1-mini",
+        temperature: float = 0.1,
+        max_tokens: int = 200,
+    ) -> None:
         self.model_name = model_name
-        self._model = None
+        self._model: Any = None
         self.input_tokens_limit = 8_192
         self.temperature = temperature
         self.max_tokens = max_tokens
 
     @property
-    def model(self):
+    def model(self) -> Any:
         if self._model is None:
             openai.api_key = config.openai_api_key
             self._model = openai
@@ -37,35 +43,31 @@ class OpenAIClient(LLMClientContract):
             return tokens_len <= self.input_tokens_limit
         return False
 
-    def run(self, prompt: str, instructions: str = None) -> str:
+    def run(self, prompt: str, instructions: str | None = None) -> str:
         messages = []
         if instructions:
-            messages.append(
-                {
-                    "role": "system",
-                    "content": instructions
-                }
-            )
+            messages.append({"role": "system", "content": instructions})
 
-        messages.append(
-            {
-                "role": "user",
-                "content": prompt
-            }
-        )
+        messages.append({"role": "user", "content": prompt})
 
         chat = self.model.chat.completions.create(
             model=self.model_name,
             messages=messages,
             temperature=self.temperature,
-            max_tokens=self.max_tokens
+            max_tokens=self.max_tokens,
         )
 
         answer = chat.choices[0].message.content
 
-        return answer
+        return str(answer)
 
-    def safe_run(self, prompt: str, instructions: str = None, max_retries=5, base_delay=10) -> str:
+    def safe_run(
+        self,
+        prompt: str,
+        instructions: str | None = None,
+        max_retries: int = 5,
+        base_delay: int = 10,
+    ) -> str:
         for attempt in range(max_retries):
             try:
                 return self.run(prompt, instructions)
@@ -82,5 +84,5 @@ class OpenAIClient(LLMClientContract):
         print("Max retries reached. Skipping this request.")
         return ""
 
-    def generate(self, prompt: str, instructions: str = None):
+    def generate(self, prompt: str, instructions: str | None = None) -> str:
         return self.safe_run(prompt, instructions)

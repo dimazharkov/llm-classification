@@ -1,10 +1,12 @@
 import os
 from functools import lru_cache
 from pathlib import Path
-from typing import List, NamedTuple
+from typing import NamedTuple
+
 from dotenv import load_dotenv
 
 load_dotenv()
+
 
 class Config(NamedTuple):
     env: str
@@ -12,7 +14,7 @@ class Config(NamedTuple):
     project_version: str
     datetime_format: str
     date_format: str
-    cors_origins: List[str]
+    cors_origins: list[str]
     root_path: Path
     static_path: Path
     gemini_api_key: str
@@ -20,7 +22,7 @@ class Config(NamedTuple):
     hugging_face_token: str
 
 
-@lru_cache()
+@lru_cache
 def get_config() -> Config:
     root = Path(__file__).resolve().parent.parent
 
@@ -37,6 +39,7 @@ def get_config() -> Config:
         openai_api_key=os.getenv("OPENAI_API_KEY", ""),
         hugging_face_token=os.getenv("HUGGING_FACE_TOKEN", ""),
     )
+
 
 config = get_config()
 

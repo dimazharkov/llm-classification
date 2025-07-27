@@ -15,10 +15,5 @@ repos:
     rev: v1.16.1
     hooks:
       - id: mypy
-        args: [--strict, --ignore-missing-imports]
+        args: [--config-file=mypy.ini]
         additional_dependencies: [tokenize-rt==3.2.0]
-
-  - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v5.10.1
-    hooks:
-      - id: isort

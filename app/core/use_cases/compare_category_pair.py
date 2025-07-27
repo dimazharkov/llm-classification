@@ -9,8 +9,8 @@ from app.core.dto.category_diff import CategoryDiff
 from app.core.helpers.prompt_helper import format_prompt
 from app.core.prompts.category_difference_prompt import category_difference_prompt
 from app.repositories.advert_file_repository import AdvertFileRepository
-from app.repositories.category_pair_file_repository import CategoryPairFileRepository
 from app.repositories.category_pair_diff_repository import CategoryPairDiffRepository
+from app.repositories.category_pair_file_repository import CategoryPairFileRepository
 
 
 @dataclass(slots=True)
@@ -19,18 +19,22 @@ class CategoryData:
     keywords: str
     examples: str
 
+
 class CompareCategoryPairUseCase:
     def __init__(
-            self,
-            llm: LLMClientContract,
-            advert_repo: AdvertFileRepository,
-            category_pair_repo: CategoryPairFileRepository
+        self,
+        llm: LLMClientContract,
+        advert_repo: AdvertFileRepository,
+        category_pair_repo: CategoryPairFileRepository,
     ):
         self.llm = llm
         self.advert_repo = advert_repo
         self.category_pair_repo = category_pair_repo
 
     def run(self, category_list: list[Category], rate_limit: int = 1) -> CategoryPairDiffRepository:
+        if not category_list:
+            print("Achtung! category_list is empty!")
+
         category_pair_diff = CategoryPairDiffRepository()
         for category1, category2 in itertools.combinations(category_list, 2):
             pair_key = (category1.id, category2.id)
@@ -41,11 +45,7 @@ class CompareCategoryPairUseCase:
 
             category_pair_diff.add(
                 pair_key,
-                CategoryDiff(
-                    category1=category1,
-                    category2=category2,
-                    difference=diff_text
-                )
+                CategoryDiff(category1=category1, category2=category2, difference=diff_text),
             )
             # print("-")
             time.sleep(rate_limit)
@@ -59,7 +59,7 @@ class CompareCategoryPairUseCase:
         prompt = format_prompt(
             category_difference_prompt,
             category1=category_data1,
-            category2=category_data2
+            category2=category_data2,
         )
         # print(f"\n\nprompt={prompt}")
         category_diff = self.llm.generate(prompt)
@@ -71,11 +71,9 @@ class CompareCategoryPairUseCase:
 
         return CategoryData(
             title=category.title,
-            keywords=", ".join(f"{kw}" for kw in category.bow),
-            examples=self._get_adverts_expamples(adverts_by_category)
+            keywords=", ".join(f"{kw}" for kw in category.bow or []),
+            examples=self._get_adverts_expamples(adverts_by_category),
         )
 
     def _get_adverts_expamples(self, adverts: list[Advert], limit: int = 5) -> str:
-        return "\n".join(
-            f"- {advert.advert_text}" for advert in adverts[:limit]
-        )
+        return "\n".join(f"- {advert.advert_text}" for advert in adverts[:limit])

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import BaseModel
 
 
@@ -8,5 +6,4 @@ class Advert(BaseModel):
     category_title: str
     advert_title: str
     advert_text: str
-    advert_summary: Optional[str] = None
-
+    advert_summary: str | None = None

@@ -1,22 +1,20 @@
 import random
 import time
-from typing import Type
+from typing import Any
 
 from app.core.contracts.experiment_contract import ExperimentContract
-from app.core.contracts.llm_client_contract import LLMClientContract
 from app.core.domain.advert import Advert
 from app.infrastructure.evaluators.classification_evaluator import ClassificationEvaluator
 from app.infrastructure.persistence.json_saver import JsonSaver
 from app.repositories.advert_file_repository import AdvertFileRepository
-from app.repositories.category_file_repository import CategoryFileRepository
 
 
 class ExperimentController:
     def __init__(
-            self,
-            advert_repository: AdvertFileRepository,
-            evaluator: ClassificationEvaluator | None = None,
-            saver: JsonSaver | None = None,
+        self,
+        advert_repository: AdvertFileRepository,
+        evaluator: ClassificationEvaluator,
+        saver: JsonSaver,
     ):
         self.advert_repository = advert_repository
         self.evaluator = evaluator
@@ -30,22 +28,23 @@ class ExperimentController:
         use_case: ExperimentContract,
         adverts: list[Advert],
         num_cases: int = 30,
-        rate_limit: int = 1
+        rate_limit: int = 1,
     ):
-        processed = []
+        processed: list[Any] = []
         processed_count = 0
 
         random.shuffle(adverts)
 
         for i, advert in enumerate(adverts, start=1):
+            print(f"advert={advert.advert_title}")
             advert_category_prediction = use_case.run(advert)
 
-            if advert_category_prediction is None:
-                print("Prediction failed!")
-            else:
-                print(".")
+            if advert_category_prediction:
+                print("+")
                 processed.append(advert_category_prediction)
                 processed_count += 1
+            else:
+                print("-")
 
             if processed_count % 10 == 0:
                 self.saver.save_list(processed)

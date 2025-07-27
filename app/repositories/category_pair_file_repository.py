@@ -1,26 +1,29 @@
 from __future__ import annotations
 
-import json
 import atexit
-from pathlib import Path
-from typing import Dict, Tuple, Iterable, Optional
+from typing import TYPE_CHECKING
 
-from app.helpers.os_helper import save_to_disc, load_from_disc
-from app.shared.helpers.category_pair_utils import split_pair_key, normalize_pair
-from app.shared.types.category_id_pair import CategoryIdPair
+from app.helpers.os_helper import load_from_disc, save_to_disc
+from app.shared.helpers.category_pair_utils import normalize_pair, split_pair_key
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+    from pathlib import Path
+
+    from app.shared.types.category_id_pair import CategoryIdPair
 
 
 class CategoryPairFileRepository:
     def __init__(self, path: str | Path) -> None:
         self._path = path
-        self._data: Dict[CategoryIdPair, str] = {}
+        self._data: dict[CategoryIdPair, str] = {}
 
         atexit.register(self.save)
 
-    def all(self) -> Iterable[Tuple[CategoryIdPair, str]]:
+    def all(self) -> Iterable[tuple[CategoryIdPair, str]]:
         return self._data.items()
 
-    def get(self, pair: CategoryIdPair) -> Optional[str]:
+    def get(self, pair: CategoryIdPair) -> str | None:
         return self._data.get(normalize_pair(pair))
 
     def add(self, pair: CategoryIdPair, diff_text: str) -> None:

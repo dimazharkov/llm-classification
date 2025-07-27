@@ -1,4 +1,4 @@
-from collections import defaultdict, Counter
+from collections import Counter, defaultdict
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -20,24 +20,15 @@ class BuildCategoryBowUseCase(UseCaseContract):
             words = advert.advert_summary.lower().split()
             category_words[advert.category_id].extend(words)
 
-        bow_per_category = self._get_bow_per_category(
-            category_words, top_k=top_k
-        )
+        bow_per_category = self._get_bow_per_category(category_words, top_k=top_k)
 
-        tf_idf_per_category = self._get_tf_idf_per_category(
-            category_words, top_k=top_k
-        )
+        tf_idf_per_category = self._get_tf_idf_per_category(category_words, top_k=top_k)
 
         categories_with_bow = []
         for category in self.categories:
             bow = bow_per_category.get(category.id, [])
             tf_idf = tf_idf_per_category.get(category.id, [])
-            category_with_bow = category.model_copy(
-                update={
-                    "bow": bow,
-                    "tf_idf": tf_idf
-                }
-            )
+            category_with_bow = category.model_copy(update={"bow": bow, "tf_idf": tf_idf})
             categories_with_bow.append(category_with_bow)
 
         return categories_with_bow
@@ -52,7 +43,7 @@ class BuildCategoryBowUseCase(UseCaseContract):
         return bow_per_category
 
     def _get_tf_idf_per_category(self, category_words: dict[int, list[str]], top_k: int) -> dict[int, list[str]]:
-        documents = [' '.join(words) for words in category_words.values()]
+        documents = [" ".join(words) for words in category_words.values()]
 
         vectorizer = TfidfVectorizer()
         tfidf_matrix = vectorizer.fit_transform(documents)
@@ -62,7 +53,7 @@ class BuildCategoryBowUseCase(UseCaseContract):
 
         for idx, category_id in enumerate(category_words.keys()):
             row = tfidf_matrix[idx]
-            tfidf_scores = zip(feature_names, row.toarray()[0])
+            tfidf_scores = zip(feature_names, row.toarray()[0], strict=False)
 
             sorted_scores = sorted(tfidf_scores, key=lambda x: x[1], reverse=True)
 

@@ -1,4 +1,4 @@
-from typing import Dict, Iterable, Tuple, Optional
+from collections.abc import Iterable
 
 from app.core.dto.category_diff import CategoryDiff
 from app.shared.helpers.category_pair_utils import normalize_pair
@@ -6,15 +6,22 @@ from app.shared.types.category_id_pair import CategoryIdPair
 
 
 class CategoryPairDiffRepository:
-    __slots__ = ('_data',)
+    __slots__ = ("_data",)
 
     def __init__(self) -> None:
-        self._data: Dict[CategoryIdPair, CategoryDiff] = {}
+        self._data: dict[CategoryIdPair, CategoryDiff] = {}
 
-    def all(self) -> Iterable[Tuple[CategoryIdPair, CategoryDiff]]:
+    def all(self) -> Iterable[tuple[CategoryIdPair, CategoryDiff]]:
         return self._data.items()
 
-    def get(self, pair: CategoryIdPair) -> Optional[CategoryDiff]:
+    def all_titles(self) -> Iterable[str]:
+        titles = set()
+        for _, diff in self.all():
+            titles.add(diff.category1.title)
+            titles.add(diff.category2.title)
+        return sorted(titles)
+
+    def get(self, pair: CategoryIdPair) -> CategoryDiff | None:
         return self._data.get(normalize_pair(pair))
 
     def add(self, pair: CategoryIdPair, diff_text: CategoryDiff) -> None:

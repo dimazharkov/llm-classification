@@ -1,6 +1,6 @@
 import typer
 
-from app.cli import category_commands, advert_commands, experiment_commands, test_commands
+from app.cli import advert_commands, category_commands, experiment_commands, test_commands
 
 app = typer.Typer()
 app.add_typer(category_commands.app, name="category")

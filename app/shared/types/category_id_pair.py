@@ -1,3 +1,1 @@
-from typing import Tuple
-
-CategoryIdPair = Tuple[int, int]
+CategoryIdPair = tuple[int, int]

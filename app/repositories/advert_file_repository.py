@@ -6,7 +6,7 @@ from app.helpers.os_helper import load_from_disc
 
 
 class AdvertFileRepository:
-    def __init__(self, path: str):
+    def __init__(self, path: str) -> None:
         self.data: list[Advert] = self._load(path)
         self.category_index: dict[int, list[Advert]] = self._build_category_index(self.data)
 
