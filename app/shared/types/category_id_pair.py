@@ -1,0 +1,1 @@
+CategoryIdPair = tuple[int, int]

@@ -1,10 +1,12 @@
 import json
 from pathlib import Path
+from typing import Any
 
 from app.helpers.file_helper import read_json, write_json
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 prompt_file_path = PROJECT_ROOT / "static" / "comparison_prompts.json"
+
 
 def save_comparison_prompt_to_file(prompt: str, key: str):
     data = read_prompt_from_file()
@@ -16,16 +18,18 @@ def save_comparison_prompt_to_file(prompt: str, key: str):
 
     return data
 
-def save_interim_results(data, file_name = "interim_results.json"):
+
+def save_interim_results(data, file_name="interim_results.json"):
     file_path = PROJECT_ROOT / "static" / file_name
     write_json(file_path, data)
 
 
-def read_prompt_from_file() -> dict:
+def read_prompt_from_file() -> Any | None:
     prompts = read_json(prompt_file_path)
     return prompts
 
-def get_comparison_prompt_from_file(key) -> str | None:
+
+def get_comparison_prompt_from_file(key) -> Any | None:
     try:
         prompts = read_json(prompt_file_path)
 

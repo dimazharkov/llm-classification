@@ -1,7 +1,7 @@
-category_keywords_prediction_prompt = (
+category_kw_prediction_prompt = (
     "Ты — классификатор объявлений. "
     "Проанализируй текст объявления и выбери наиболее подходящую категорию из списка.\n\n"
-    "Объявление:\n\"{advert_title} {advert_text}\"\n\n"
+    'Объявление:\n"{advert_title} {advert_text}"\n\n'
     "Список категорий с ключевыми словами:\n"
     "{categories_with_keywords}\n\n"
     "Каждая категория указана в формате:\n"

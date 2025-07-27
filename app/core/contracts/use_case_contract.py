@@ -1,4 +1,5 @@
-from typing import Protocol, Any
+from typing import Protocol
 
 
-class UseCaseContract(Protocol): pass
+class UseCaseContract(Protocol):
+    pass

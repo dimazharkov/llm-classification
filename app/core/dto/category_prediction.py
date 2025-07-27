@@ -1,12 +1,12 @@
-from pydantic import BaseModel, field_validator, computed_field
+from pydantic import BaseModel, computed_field, field_validator
 
 
 class AdvertCategoryPrediction(BaseModel):
     advert_category: str
-    predicted_category: str
-    confidence: float
+    predicted_category: str | None = None
+    confidence: float | None = None
 
-    @field_validator('confidence')
+    @field_validator("confidence")
     def round_confidence(cls, v):
         return round(v, 2)
 

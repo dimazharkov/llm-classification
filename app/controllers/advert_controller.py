@@ -1,5 +1,5 @@
 import time
-from typing import Iterable
+from collections.abc import Iterable
 
 from app.core.contracts.llm_client_contract import LLMClientContract
 from app.core.domain.advert import Advert
@@ -10,7 +10,13 @@ from app.helpers.os_helper import load_from_disc, save_to_disc
 
 
 class AdvertController:
-    def preprocess(self, source_path: str, target_path: str, adverts_per_category: int = 20, categories_ids: Iterable[int] = None) -> None:
+    def preprocess(
+        self,
+        source_path: str,
+        target_path: str,
+        adverts_per_category: int = 20,
+        categories_ids: Iterable[int] = None,
+    ) -> None:
         raw = load_from_disc(source_path)
         parsed = [AdvertRaw.model_validate(ad) for ad in raw]
         processed = PreprocessAdvertsUseCase(parsed).run(categories_ids, adverts_per_category)
@@ -38,8 +44,3 @@ class AdvertController:
     def _save_adverts(self, adverts: list[Advert], target_path: str) -> None:
         payload = [ad.model_dump(mode="json") for ad in adverts]
         save_to_disc(payload, target_path)
-
-
-
-
-
