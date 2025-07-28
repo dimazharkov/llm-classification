@@ -1,6 +1,6 @@
 import random
 import time
-from typing import Any, Optional
+from typing import Any
 
 from app.core.contracts.experiment_contract import ExperimentContract
 from app.core.domain.advert import Advert
@@ -15,19 +15,19 @@ class ExperimentController:
         advert_repository: AdvertFileRepository,
         evaluator: ClassificationEvaluator,
         saver: JsonSaver,
-    ):
+    ) -> None:
         self.advert_repository = advert_repository
         self.evaluator = evaluator
         self.saver = saver
 
     def run(self, use_case: ExperimentContract, num_cases: int = 30, rate_limit: int = 1):
-        self._execute(use_case, self.advert_repository.get(), num_cases=None, rate_limit=1)
+        self._execute(use_case, self.advert_repository.get(), num_cases=num_cases, rate_limit=rate_limit)
 
     def _execute(
         self,
         use_case: ExperimentContract,
         adverts: list[Advert],
-        num_cases: Optional[int] = 30,
+        num_cases: int | None = 30,
         rate_limit: int = 1,
     ):
         processed: list[Any] = []
