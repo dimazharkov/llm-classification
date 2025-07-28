@@ -54,7 +54,7 @@ class PairwiseEvaluator:
             for j in range(self.n):
                 if i == j:
                     continue
-                if self.matrix and self.matrix[i][j] > 1:
+                if self.matrix[i][j] > 1:
                     wins[label] += 1
 
         max_wins = max(wins.values())

@@ -16,6 +16,7 @@ class BuildCategoryBowUseCase(UseCaseContract):
 
         for advert in adverts:
             if not advert.advert_summary:
+                print(f"advert has no advert_summary")
                 continue
             words = advert.advert_summary.lower().split()
             category_words[advert.category_id].extend(words)
