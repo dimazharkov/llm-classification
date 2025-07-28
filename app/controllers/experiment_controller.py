@@ -15,19 +15,19 @@ class ExperimentController:
         advert_repository: AdvertFileRepository,
         evaluator: ClassificationEvaluator,
         saver: JsonSaver,
-    ):
+    ) -> None:
         self.advert_repository = advert_repository
         self.evaluator = evaluator
         self.saver = saver
 
     def run(self, use_case: ExperimentContract, num_cases: int = 30, rate_limit: int = 1):
-        self._execute(use_case, self.advert_repository.get(), num_cases, rate_limit)
+        self._execute(use_case, self.advert_repository.get(), num_cases=num_cases, rate_limit=rate_limit)
 
     def _execute(
         self,
         use_case: ExperimentContract,
         adverts: list[Advert],
-        num_cases: int = 30,
+        num_cases: int | None = 30,
         rate_limit: int = 1,
     ):
         processed: list[Any] = []
@@ -36,7 +36,7 @@ class ExperimentController:
         random.shuffle(adverts)
 
         for i, advert in enumerate(adverts, start=1):
-            print(f"advert={advert.advert_title}")
+            # print(f"advert={advert.advert_title}")
             advert_category_prediction = use_case.run(advert)
 
             if advert_category_prediction:
