@@ -1,6 +1,6 @@
 import random
 import time
-from typing import Any
+from typing import Any, Optional
 
 from app.core.contracts.experiment_contract import ExperimentContract
 from app.core.domain.advert import Advert
@@ -21,13 +21,13 @@ class ExperimentController:
         self.saver = saver
 
     def run(self, use_case: ExperimentContract, num_cases: int = 30, rate_limit: int = 1):
-        self._execute(use_case, self.advert_repository.get(), num_cases, rate_limit)
+        self._execute(use_case, self.advert_repository.get(), num_cases=None, rate_limit=1)
 
     def _execute(
         self,
         use_case: ExperimentContract,
         adverts: list[Advert],
-        num_cases: int = 30,
+        num_cases: Optional[int] = 30,
         rate_limit: int = 1,
     ):
         processed: list[Any] = []
@@ -36,7 +36,7 @@ class ExperimentController:
         random.shuffle(adverts)
 
         for i, advert in enumerate(adverts, start=1):
-            print(f"advert={advert.advert_title}")
+            # print(f"advert={advert.advert_title}")
             advert_category_prediction = use_case.run(advert)
 
             if advert_category_prediction:
