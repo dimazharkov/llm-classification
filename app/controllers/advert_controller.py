@@ -4,6 +4,7 @@ from collections.abc import Iterable
 from app.core.contracts.llm_client_contract import LLMClientContract
 from app.core.domain.advert import Advert
 from app.core.dto.advert_raw import AdvertRaw
+from app.core.dto.category_prediction import AdvertCategoryPrediction
 from app.core.use_cases.preprocess_adverts import PreprocessAdvertsUseCase
 from app.core.use_cases.summarize_advert import SummarizeAdvertUseCase
 from app.helpers.os_helper import load_from_disc, save_to_disc
@@ -53,6 +54,37 @@ class AdvertController:
 
         self._save_adverts(indexed_list, target_path)
         print("done")
+
+    def analyze_results(self, source_path: str, rejected_path: str):
+        try:
+            experiment_results = load_from_disc(source_path)
+        except FileNotFoundError:
+            print("Achtung! source_path is empty!")
+            return
+
+        if not experiment_results:
+            print("Empty results")
+            return
+
+        try:
+            rejected_adverts = load_from_disc(rejected_path)
+        except FileNotFoundError:
+            rejected_adverts = {}
+
+        stats = experiment_results.pop()
+        prediction_list = [AdvertCategoryPrediction.model_validate(prediction) for prediction in experiment_results]
+
+        for prediction in prediction_list:
+            if prediction.tp:
+                continue
+            if prediction.advert_id:
+                rejected_adverts[prediction.advert_id] = rejected_adverts.get(prediction.advert_id, 0) + 1
+
+        save_to_disc(rejected_adverts, rejected_path)
+        print("done")
+
+
+
 
     def _save_adverts(self, adverts: list[Advert], target_path: str) -> None:
         payload = [ad.model_dump(mode="json") for ad in adverts]

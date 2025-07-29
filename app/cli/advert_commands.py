@@ -48,3 +48,13 @@ def indexing(
     target_path: str = typer.Option("indexed_adverts.json", help="Путь для сохранения"),
 ):
     AdvertController().indexing(source_path, target_path)
+
+@app.command()
+def analyze(
+    source_path: str = typer.Option("experiment_one.json", help="Путь для чтения"),
+    rejected_path: str = typer.Option("rejected_ads.json", help="Путь для сохранения"),
+):
+    AdvertController().analyze_results(
+        source_path,
+        rejected_path,
+    )

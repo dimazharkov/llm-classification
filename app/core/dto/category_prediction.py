@@ -13,7 +13,7 @@ class AdvertCategoryPrediction(BaseModel):
     def round_confidence(cls, v):
         return round(v, 2)
 
-    @property
+    # @property
     @computed_field
     def tp(self) -> bool:
         return self.advert_category == self.predicted_category
