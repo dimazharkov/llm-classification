@@ -41,3 +41,10 @@ def preprocess(
     selected_ids: list[int] = typer.Option(DEFAULT_SELECTED_IDS, help="Список ID категорий, например: 11239 11243 595"),
 ):
     AdvertController().preprocess(source_path, target_path, per_category, list(selected_ids))
+
+@app.command()
+def indexing(
+    source_path: str = typer.Option("adverts.json", help="Путь для чтения"),
+    target_path: str = typer.Option("indexed_adverts.json", help="Путь для сохранения"),
+):
+    AdvertController().indexing(source_path, target_path)

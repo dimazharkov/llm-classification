@@ -36,11 +36,11 @@ class ExperimentController:
         random.shuffle(adverts)
 
         for i, advert in enumerate(adverts, start=1):
-            # print(f"advert={advert.advert_title}")
             advert_category_prediction = use_case.run(advert)
 
             if advert_category_prediction:
                 print("+")
+                advert_category_prediction.advert_id = advert.advert_id
                 processed.append(advert_category_prediction)
                 processed_count += 1
             else:

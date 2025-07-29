@@ -41,6 +41,20 @@ class AdvertController:
 
         self._save_adverts(resumed, target_path)
 
+    def indexing(self, source_path: str, target_path: str):
+        raw = load_from_disc(source_path)
+        adverts_list = [Advert.model_validate(ad) for ad in raw]
+
+        indexed_list = []
+        for idx, advert in enumerate(adverts_list):
+            advert.advert_id = idx + 1
+            advert.advert_summary = (advert.advert_summary or "").replace("\n", " ").replace("\r", " ").strip()
+            indexed_list.append(advert)
+
+        self._save_adverts(indexed_list, target_path)
+        print("done")
+
     def _save_adverts(self, adverts: list[Advert], target_path: str) -> None:
         payload = [ad.model_dump(mode="json") for ad in adverts]
         save_to_disc(payload, target_path)
+

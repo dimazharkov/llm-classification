@@ -1,10 +1,13 @@
+from typing import Optional
+
 from pydantic import BaseModel, computed_field, field_validator
 
 
 class AdvertCategoryPrediction(BaseModel):
+    advert_id: Optional[int] = None
     advert_category: str
-    predicted_category: str | None = None
-    confidence: float | None = None
+    predicted_category: Optional[str] = None
+    confidence: Optional[float] = None
 
     @field_validator("confidence")
     def round_confidence(cls, v):
