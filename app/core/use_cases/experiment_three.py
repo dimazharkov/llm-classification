@@ -1,3 +1,5 @@
+import time
+
 from app.core.domain.advert import Advert
 from app.core.dto.category_prediction import AdvertCategoryPrediction
 from app.core.use_cases.compare_category_pair import CompareCategoryPairUseCase
@@ -19,8 +21,26 @@ class ExperimentThreeUseCase:
         self.rate_limit = rate_limit
 
     def run(self, advert: Advert) -> AdvertCategoryPrediction | None:
-        five_predicted_categories = self.predict_five_categories_use_case.run(advert)
+        start = time.perf_counter()
+        five_predicted_categories = self.predict_five_categories_use_case.run(
+            advert
+        )
+        print(f"predict_five_categories_use_case: {time.perf_counter() - start:.2f} s")
 
-        category_pair_differences = self.compare_category_pair_use_case.run(five_predicted_categories, self.rate_limit)
+        start = time.perf_counter()
+        category_pair_differences = self.compare_category_pair_use_case.run(
+            five_predicted_categories,
+            self.rate_limit
+        )
+        print(f"compare_category_pair_use_case: {time.perf_counter() - start:.2f} s")
 
-        return self.pairwise_classification_use_case.run(advert, category_pair_differences, self.rate_limit)
+        start = time.perf_counter()
+        result = self.pairwise_classification_use_case.run(
+            advert,
+            category_pair_differences,
+            self.rate_limit
+        )
+        print(f"pairwise_classification_use_case: {time.perf_counter() - start:.2f} s")
+
+        return result
+        # return self.pairwise_classification_use_case.run(advert, category_pair_differences, self.rate_limit)

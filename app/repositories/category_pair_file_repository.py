@@ -16,8 +16,8 @@ if TYPE_CHECKING:
 class CategoryPairFileRepository:
     def __init__(self, path: str | Path) -> None:
         self._path = path
-        self._data: dict[CategoryIdPair, str] = {}
-
+        self._data: dict[CategoryIdPair, str] = self.load()
+        self.updated = False
         atexit.register(self.save)
 
     def all(self) -> Iterable[tuple[CategoryIdPair, str]]:
@@ -28,15 +28,17 @@ class CategoryPairFileRepository:
 
     def add(self, pair: CategoryIdPair, diff_text: str) -> None:
         self._data[normalize_pair(pair)] = diff_text
+        self.updated = True
 
     def save(self) -> None:
-        serializable = {f"{a}:{b}": txt for (a, b), txt in self._data.items()}
-        save_to_disc(serializable, self._path)
+        if self.updated:
+            serializable = {f"{a}:{b}": txt for (a, b), txt in self._data.items()}
+            save_to_disc(serializable, self._path)
+            self.updated = False
 
-    def load(self) -> None:
+    def load(self) -> dict:
         try:
             raw = load_from_disc(self._path)
+            return {split_pair_key(k): v for k, v in raw.items()}
         except FileNotFoundError:
-            self._data = {}
-            return
-        self._data = {split_pair_key(k): v for k, v in raw.items()}
+            return {}

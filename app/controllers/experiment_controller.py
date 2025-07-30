@@ -36,9 +36,6 @@ class ExperimentController:
         random.shuffle(adverts)
 
         for i, advert in enumerate(adverts, start=1):
-            percent = (i / len(adverts)) * 100
-            print(f"[{i}/{len(adverts)}] Обработано: {percent:.1f}%")
-
             advert_category_prediction = use_case.run(advert)
 
             if advert_category_prediction:
@@ -54,6 +51,9 @@ class ExperimentController:
 
             if isinstance(num_cases, int) and processed_count >= num_cases:
                 break
+
+            percent = (i / len(adverts)) * 100
+            print(f"[{i}/{len(adverts)}] Обработано: {percent:.1f}%")
 
             time.sleep(rate_limit)
 

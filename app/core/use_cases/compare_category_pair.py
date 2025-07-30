@@ -40,16 +40,19 @@ class CompareCategoryPairUseCase:
             pair_key = (category1.id, category2.id)
             diff_text = self.category_pair_repo.get(pair_key)
             if not diff_text:
+                print(f"[{category1.id}:{category2.id}] diff isn't found, preparing ...")
                 diff_text = self._prep_categories_diff(category1, category2)
                 self.category_pair_repo.add(pair_key, diff_text)
+                time.sleep(rate_limit)
+            else:
+                print(f"[{category1.id}:{category2.id}] ok")
 
             category_pair_diff.add(
                 pair_key,
                 CategoryDiff(category1=category1, category2=category2, difference=diff_text),
             )
-            # print("-")
-            time.sleep(rate_limit)
 
+        self.category_pair_repo.save()
         return category_pair_diff
 
     def _prep_categories_diff(self, category1: Category, category2: Category) -> str:
@@ -61,9 +64,9 @@ class CompareCategoryPairUseCase:
             category1=category_data1,
             category2=category_data2,
         )
-        # print(f"\n\nprompt={prompt}")
+
         category_diff = self.llm.generate(prompt)
-        # print(f"\n\ncategory_diff={category_diff}")
+
         return category_diff
 
     def _get_category_data(self, category: Category) -> CategoryData:

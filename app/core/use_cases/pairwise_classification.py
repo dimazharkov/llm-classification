@@ -64,8 +64,10 @@ class PairwiseClassificationUseCase:
 
         predicted_category, confidence = parse_prediction_and_confidence(model_result)
         if predicted_category:
+            print(".")
             return PredictionConfidence(prediction=predicted_category, confidence=confidence)
 
+        print("-")
         return None
 
     def _predict_category_backup(self, advert: Advert, category_diff: CategoryDiff) -> PredictionConfidence | None:
