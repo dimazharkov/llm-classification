@@ -78,7 +78,8 @@ class AdvertController:
             if prediction.tp:
                 continue
             if prediction.advert_id:
-                rejected_adverts[prediction.advert_id] = rejected_adverts.get(prediction.advert_id, 0) + 1
+                advert_id = str(prediction.advert_id)
+                rejected_adverts[advert_id] = rejected_adverts.get(advert_id, 0) + 1
 
         save_to_disc(rejected_adverts, rejected_path)
         print("done")
