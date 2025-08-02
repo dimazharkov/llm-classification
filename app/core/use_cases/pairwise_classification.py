@@ -70,21 +70,21 @@ class PairwiseClassificationUseCase:
         print("-")
         return None
 
-    def _predict_category_backup(self, advert: Advert, category_diff: CategoryDiff) -> PredictionConfidence | None:
-        prompt = format_prompt(
-            category_pair_prediction_prompt,
-            advert=advert,
-            category1=category_diff.category1,
-            category2=category_diff.category2,
-            difference=category_diff.difference,
-        )
-
-        model_result = self.llm.generate(prompt)
-
-        predicted_category, confidence = parse_prediction_and_confidence(model_result)
-        print(f"predicted_category={predicted_category}, confidence={confidence}")
-        if predicted_category and predicted_category != "другое":
-            print("ok")
-            return PredictionConfidence(prediction=predicted_category, confidence=confidence)
-
-        return None
+    # def _predict_category_backup(self, advert: Advert, category_diff: CategoryDiff) -> PredictionConfidence | None:
+    #     prompt = format_prompt(
+    #         category_pair_prediction_prompt,
+    #         advert=advert,
+    #         category1=category_diff.category1,
+    #         category2=category_diff.category2,
+    #         difference=category_diff.difference,
+    #     )
+    #
+    #     model_result = self.llm.generate(prompt)
+    #
+    #     predicted_category, confidence = parse_prediction_and_confidence(model_result)
+    #     print(f"predicted_category={predicted_category}, confidence={confidence}")
+    #     if predicted_category and predicted_category != "другое":
+    #         print("ok")
+    #         return PredictionConfidence(prediction=predicted_category, confidence=confidence)
+    #
+    #     return None
