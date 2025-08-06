@@ -53,6 +53,7 @@ class CompareCategoryPairUseCase:
             )
 
         self.category_pair_repo.save()
+        print(f"category_pair_diff: {category_pair_diff}")
         return category_pair_diff
 
     def _prep_categories_diff(self, category1: Category, category2: Category) -> str:
@@ -64,7 +65,7 @@ class CompareCategoryPairUseCase:
             category1=category_data1,
             category2=category_data2,
         )
-
+        print(f"category_difference_prompt:\n {prompt}")
         category_diff = self.llm.generate(prompt)
 
         return category_diff
