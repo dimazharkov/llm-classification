@@ -82,7 +82,6 @@ class ExperimentController:
             # ]:
             #     continue
 
-
             print("START")
             advert_category_prediction = use_case.run(advert)
 
