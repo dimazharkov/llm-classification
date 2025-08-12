@@ -30,7 +30,5 @@ class CategoryPairDiffRepository:
     def __repr__(self) -> str:
         class_name = self.__class__.__name__
         count = len(self._data)
-        preview = "\n".join(
-            f"{k}: {v.difference[:60]}..." for k, v in list(self._data.items())[:3]
-        )
+        preview = "\n".join(f"{k}: {v.difference[:60]}..." for k, v in list(self._data.items())[:3])
         return f"<{class_name} with {count} pairs>\nPreview:\n{preview}"

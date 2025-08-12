@@ -173,6 +173,7 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-/static
+static/
+docs/
 
 todo.txt

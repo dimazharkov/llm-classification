@@ -42,3 +42,11 @@ def enrich(
     top_k: int = typer.Option(20, help="Количество слов в BoW"),
 ) -> None:
     CategoryController().build_bow(categories_path, adverts_path, target_path, top_k)
+
+@app.command()
+def pair_description(
+    adverts_path: str = typer.Option("adverts.json", help="Путь к json с объявлениями"),
+    categories_path: str = typer.Option("categories.json", help="Путь к json c категориями"),
+    category_pairs_path: str = typer.Option("category_pairs.json", help="Путь для сохранения"),
+) -> None:
+    CategoryController().compare_category_pair(adverts_path, categories_path, category_pairs_path)

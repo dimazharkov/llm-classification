@@ -1,6 +1,7 @@
 import itertools
 import time
 from dataclasses import dataclass
+from typing import Optional
 
 from app.core.contracts.llm_client_contract import LLMClientContract
 from app.core.domain.advert import Advert
@@ -17,7 +18,7 @@ from app.repositories.category_pair_file_repository import CategoryPairFileRepos
 class CategoryData:
     title: str
     keywords: str
-    examples: str
+    examples: Optional[str] = None
 
 
 class CompareCategoryPairUseCase:
@@ -31,7 +32,7 @@ class CompareCategoryPairUseCase:
         self.advert_repo = advert_repo
         self.category_pair_repo = category_pair_repo
 
-    def run(self, category_list: list[Category], rate_limit: int = 1) -> CategoryPairDiffRepository:
+    def run(self, category_list: list[Category], rate_limit: float = 0.5) -> CategoryPairDiffRepository:
         if not category_list:
             print("Achtung! category_list is empty!")
 
@@ -53,7 +54,7 @@ class CompareCategoryPairUseCase:
             )
 
         self.category_pair_repo.save()
-        print(f"category_pair_diff: {category_pair_diff}")
+        # print(f"category_pair_diff: {category_pair_diff}")
         return category_pair_diff
 
     def _prep_categories_diff(self, category1: Category, category2: Category) -> str:
@@ -65,18 +66,18 @@ class CompareCategoryPairUseCase:
             category1=category_data1,
             category2=category_data2,
         )
-        print(f"category_difference_prompt:\n {prompt}")
+        # print(f"category_difference_prompt:\n {prompt}")
         category_diff = self.llm.generate(prompt)
-
+        # print(f"category_difference_prompt result:\n {category_diff}")
         return category_diff
 
     def _get_category_data(self, category: Category) -> CategoryData:
-        adverts_by_category = self.advert_repo.get_adverts_by_category(category)
+        # adverts_by_category = self.advert_repo.get_adverts_by_category(category)
 
         return CategoryData(
             title=category.title,
-            keywords=", ".join(f"{kw}" for kw in category.bow or []),
-            examples=self._get_adverts_expamples(adverts_by_category),
+            keywords=", ".join(f"{kw}" for kw in category.tf_idf or []),
+            # examples=self._get_adverts_expamples(adverts_by_category),
         )
 
     def _get_adverts_expamples(self, adverts: list[Advert], limit: int = 5) -> str:
