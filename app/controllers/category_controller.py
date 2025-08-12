@@ -43,5 +43,6 @@ class CategoryController:
         categories = [Category.model_validate(category) for category in raw_categories]
 
         CompareCategoryPairUseCase(llm=llm_client, advert_repo=advert_repo, category_pair_repo=category_pair_repo).run(
-            category_list=categories, rate_limit=0.5,
+            category_list=categories,
+            rate_limit=0.5,
         )
