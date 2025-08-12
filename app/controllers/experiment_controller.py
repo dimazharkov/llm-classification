@@ -20,7 +20,7 @@ class ExperimentController:
         self.evaluator = evaluator
         self.saver = saver
 
-    def run(self, use_case: ExperimentContract, num_cases: int = 30, rate_limit: int = 1):
+    def run(self, use_case: ExperimentContract, num_cases: int = 30, rate_limit: float = 0.5):
         self._execute(use_case, self.advert_repository.get(), num_cases=num_cases, rate_limit=rate_limit)
 
     def _execute(
@@ -28,7 +28,7 @@ class ExperimentController:
         use_case: ExperimentContract,
         adverts: list[Advert],
         num_cases: int | None = 30,
-        rate_limit: int = 1,
+        rate_limit: float = 0.5,
     ):
         processed: list[Any] = []
         processed_count = 0
@@ -36,22 +36,60 @@ class ExperimentController:
         random.shuffle(adverts)
 
         for i, advert in enumerate(adverts, start=1):
-            if advert.advert_id in [
-                111, 162, 154, 112, 236, 110, 218, 319, 189, 313, 248, 173, 34, 114, 54, 230,
-                97, 290, 67, 38, 62, 77, 87, 11, 165, 72, 27, 225, 143, 350, 133, 5, 3, 269,
-                264, 252, 289, 243, 229, 200, 151, 53
-            ]:
-                continue
+            # if advert.advert_id not in [
+            #     111,
+            #     162,
+            #     154,
+            #     112,
+            #     236,
+            #     110,
+            #     218,
+            #     319,
+            #     189,
+            #     313,
+            #     248,
+            #     173,
+            #     34,
+            #     114,
+            #     54,
+            #     230,
+            #     97,
+            #     290,
+            #     67,
+            #     38,
+            #     62,
+            #     77,
+            #     87,
+            #     11,
+            #     165,
+            #     72,
+            #     27,
+            #     225,
+            #     143,
+            #     350,
+            #     133,
+            #     5,
+            #     3,
+            #     269,
+            #     264,
+            #     252,
+            #     289,
+            #     243,
+            #     229,
+            #     200,
+            #     151,
+            #     53,
+            # ]:
+            #     continue
 
+
+            print("START")
             advert_category_prediction = use_case.run(advert)
 
             if advert_category_prediction:
-                print("+")
                 advert_category_prediction.advert_id = advert.advert_id
                 processed.append(advert_category_prediction)
                 processed_count += 1
-            else:
-                print("-")
 
             if processed_count % 10 == 0:
                 self.saver.save_list(processed)

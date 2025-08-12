@@ -5,7 +5,7 @@ from app.core.domain.advert import Advert
 from app.core.dto.category_diff import CategoryDiff
 from app.core.dto.category_prediction import AdvertCategoryPrediction
 from app.core.dto.prediction_confidence import PredictionConfidence
-from app.core.helpers.prompt_helper import format_prompt, parse_prediction_and_confidence
+from app.core.helpers.prompt_helper import format_prompt, parse_prediction
 from app.core.prompts.category_pair_prediction_prompt import category_pair_prediction_prompt
 from app.infrastructure.evaluators.pairwise_evaluator import PairwiseEvaluator
 from app.repositories.category_pair_diff_repository import CategoryPairDiffRepository
@@ -41,7 +41,9 @@ class PairwiseClassificationUseCase:
             time.sleep(rate_limit)
 
         category, score = self.category_evaluator.best()
-        print(f"predicted category: {category if category else ""}")
+        # print("*" * 10)
+        # print(f"predicted category: {category if category else ""}")
+        # print("*" * 10)
         if category:
             return AdvertCategoryPrediction(
                 advert_category=advert.category_title,
@@ -59,32 +61,15 @@ class PairwiseClassificationUseCase:
             category2=category_diff.category2,
             difference=category_diff.difference,
         )
-
+        # print(f"category_pair_prediction_prompt:\n {prompt}")
         model_result = self.llm.generate(prompt)
 
-        predicted_category, confidence = parse_prediction_and_confidence(model_result)
+        predicted_category = parse_prediction(model_result)
+        # print("." * 10)
+        # print(f"model_response={predicted_category}")
+        # print("." * 10)
         if predicted_category:
-            print(".")
-            return PredictionConfidence(prediction=predicted_category, confidence=confidence)
+            return PredictionConfidence(prediction=predicted_category)
 
-        print("-")
+        # print("-" * 10)
         return None
-
-    # def _predict_category_backup(self, advert: Advert, category_diff: CategoryDiff) -> PredictionConfidence | None:
-    #     prompt = format_prompt(
-    #         category_pair_prediction_prompt,
-    #         advert=advert,
-    #         category1=category_diff.category1,
-    #         category2=category_diff.category2,
-    #         difference=category_diff.difference,
-    #     )
-    #
-    #     model_result = self.llm.generate(prompt)
-    #
-    #     predicted_category, confidence = parse_prediction_and_confidence(model_result)
-    #     print(f"predicted_category={predicted_category}, confidence={confidence}")
-    #     if predicted_category and predicted_category != "другое":
-    #         print("ok")
-    #         return PredictionConfidence(prediction=predicted_category, confidence=confidence)
-    #
-    #     return None

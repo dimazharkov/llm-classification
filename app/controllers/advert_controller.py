@@ -25,7 +25,7 @@ class AdvertController:
         payload = [item.model_dump(mode="json") for item in processed]
         save_to_disc(payload, target_path)
 
-    def summarize(self, source_path: str, target_path: str, llm: LLMClientContract, rate_limit=1) -> None:
+    def summarize(self, source_path: str, target_path: str, llm: LLMClientContract, rate_limit=0.5) -> None:
         raw = load_from_disc(source_path)
         parsed = [Advert.model_validate(ad) for ad in raw]
 
@@ -33,9 +33,9 @@ class AdvertController:
         resumed = []
 
         for i, advert in enumerate(parsed, start=1):
+            print(".")
             advert_with_resume = use_case.run(advert)
             resumed.append(advert_with_resume)
-            print(".", end="")
             if i % 10 == 0:
                 self._save_adverts(resumed, target_path)
             time.sleep(rate_limit)
@@ -84,10 +84,6 @@ class AdvertController:
         save_to_disc(rejected_adverts, rejected_path)
         print("done")
 
-
-
-
     def _save_adverts(self, adverts: list[Advert], target_path: str) -> None:
         payload = [ad.model_dump(mode="json") for ad in adverts]
         save_to_disc(payload, target_path)
-

@@ -31,8 +31,8 @@ def ex_three():
 
     compare_category_pair_use_case = container.compare_category_pair_use_case()
     category_pair_diff_repo: CategoryPairDiffRepository = compare_category_pair_use_case.run(category_list, rate_limit=1)
-    print("category_pair_diff_repo -----")
-    print(category_pair_diff_repo.all())
+    # print("category_pair_diff_repo -----")
+    # print(category_pair_diff_repo.all())
 
     pairwise_classification_use_case = container.pairwise_classification_use_case()
     advert_category_prediction: AdvertCategoryPrediction | None = pairwise_classification_use_case.run(
@@ -41,5 +41,5 @@ def ex_three():
         rate_limit=1,
     )
 
-    print("advert_category_prediction -----")
-    print(advert_category_prediction)
+    # print("advert_category_prediction -----")
+    # print(advert_category_prediction)
