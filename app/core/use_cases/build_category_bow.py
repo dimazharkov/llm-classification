@@ -1,6 +1,7 @@
 import re
-from collections import defaultdict, Counter
-from typing import Iterable
+from collections import Counter, defaultdict
+from collections.abc import Iterable
+
 import numpy as np
 from scipy import sparse
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -16,15 +17,25 @@ class BuildCategoryBowUseCase(UseCaseContract):
         categories: list[Category],
         *,
         stop_words: set[str] | None = None,
-        min_df: int | float = 2,          # под объём объявлений
+        min_df: int | float = 2,  # под объём объявлений
         max_df: float = 0.7,
         token_pattern: str = r"(?u)\b(?!\d)\w[\w\-]+\b",
     ):
         self.categories = categories
         # базовый стоп-лист под описание объявлений
         self.stop_words = stop_words or {
-            "цена", "ціна", "телефон", "доставка", "фото", "нове", "новый", "новий",
-            "бу", "б", "у", "б/у"  # на случай заранее токенизированных строк
+            "цена",
+            "ціна",
+            "телефон",
+            "доставка",
+            "фото",
+            "нове",
+            "новый",
+            "новий",
+            "бу",
+            "б",
+            "у",
+            "б/у",  # на случай заранее токенизированных строк
         }
         self.min_df = min_df
         self.max_df = max_df
@@ -53,9 +64,7 @@ class BuildCategoryBowUseCase(UseCaseContract):
         for category in self.categories:
             bow = bow_per_category.get(category.id, [])
             tf_idf = tf_idf_per_category.get(category.id, [])
-            categories_with_bow.append(
-                category.model_copy(update={"bow": bow, "tf_idf": tf_idf})
-            )
+            categories_with_bow.append(category.model_copy(update={"bow": bow, "tf_idf": tf_idf}))
         return categories_with_bow
 
     def _filter_tokens(self, tokens: Iterable[str]) -> list[str]:
@@ -103,7 +112,7 @@ class BuildCategoryBowUseCase(UseCaseContract):
         # отфильтруем соответствующие документы
         if len(cat_idx) != len(cat_ids):
             filtered_docs = []
-            for d, cid in zip(docs, cat_ids):
+            for d, cid in zip(docs, cat_ids, strict=False):
                 if cid in cat_to_idx:
                     filtered_docs.append(d)
             docs = filtered_docs
@@ -119,13 +128,13 @@ class BuildCategoryBowUseCase(UseCaseContract):
             self.min_df = 0.005
 
         vectorizer = TfidfVectorizer(
-            lowercase=False,                 # уже привели к lower
+            lowercase=False,  # уже привели к lower
             min_df=self.min_df,
             max_df=self.max_df,
             token_pattern=self.token_pattern,
-            stop_words=list(self.stop_words) if self.stop_words else None,            # единый стоп-лист
+            stop_words=list(self.stop_words) if self.stop_words else None,  # единый стоп-лист
         )
-        X = vectorizer.fit_transform(docs)   # [n_docs, n_terms]
+        X = vectorizer.fit_transform(docs)  # [n_docs, n_terms]
         feats = np.array(vectorizer.get_feature_names_out())
 
         # агрегируем: сумма tf-idf по объявлениям каждой категории

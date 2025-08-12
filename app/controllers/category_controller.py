@@ -36,18 +36,12 @@ class CategoryController:
 
     def compare_category_pair(self, adverts_path: str, categories_path: str, category_pairs_path: str):
         llm_client = GeminiClient()
-        advert_repo=AdvertFileRepository(adverts_path)
-        category_pair_repo=CategoryPairFileRepository(category_pairs_path)
+        advert_repo = AdvertFileRepository(adverts_path)
+        category_pair_repo = CategoryPairFileRepository(category_pairs_path)
 
         raw_categories = load_from_disc(categories_path)
         categories = [Category.model_validate(category) for category in raw_categories]
 
-        CompareCategoryPairUseCase(
-            llm=llm_client,
-            advert_repo=advert_repo,
-            category_pair_repo=category_pair_repo
-        ).run(
-            category_list=categories,
-            rate_limit=0.5
+        CompareCategoryPairUseCase(llm=llm_client, advert_repo=advert_repo, category_pair_repo=category_pair_repo).run(
+            category_list=categories, rate_limit=0.5,
         )
-

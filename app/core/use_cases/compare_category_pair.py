@@ -1,7 +1,6 @@
 import itertools
 import time
 from dataclasses import dataclass
-from typing import Optional
 
 from app.core.contracts.llm_client_contract import LLMClientContract
 from app.core.domain.advert import Advert
@@ -18,7 +17,7 @@ from app.repositories.category_pair_file_repository import CategoryPairFileRepos
 class CategoryData:
     title: str
     keywords: str
-    examples: Optional[str] = None
+    examples: str | None = None
 
 
 class CompareCategoryPairUseCase:

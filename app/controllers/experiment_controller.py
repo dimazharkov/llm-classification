@@ -28,7 +28,7 @@ class ExperimentController:
         use_case: ExperimentContract,
         adverts: list[Advert],
         num_cases: int | None = 30,
-        rate_limit: int = 1,
+        rate_limit: float = 0.5,
     ):
         processed: list[Any] = []
         processed_count = 0
@@ -82,14 +82,6 @@ class ExperimentController:
             # ]:
             #     continue
 
-            if advert.advert_id not in [
-                275, 308, 119, 337, 60, 277, 267, 35, 342, 286,
-                168, 325, 66, 227, 274, 234, 24, 312, 92, 204, 48, 13, 1, 291,
-                177, 46, 215, 161, 224, 74, 81, 28, 283, 29, 58, 315, 194, 210,
-                284, 144, 149, 98, 135, 100, 279, 7, 134, 32, 90, 296
-
-            ]:
-                continue
 
             print("START")
             advert_category_prediction = use_case.run(advert)

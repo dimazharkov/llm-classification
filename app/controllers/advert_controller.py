@@ -84,10 +84,6 @@ class AdvertController:
         save_to_disc(rejected_adverts, rejected_path)
         print("done")
 
-
-
-
     def _save_adverts(self, adverts: list[Advert], target_path: str) -> None:
         payload = [ad.model_dump(mode="json") for ad in adverts]
         save_to_disc(payload, target_path)
-

@@ -43,6 +43,7 @@ def enrich(
 ) -> None:
     CategoryController().build_bow(categories_path, adverts_path, target_path, top_k)
 
+
 @app.command()
 def pair_description(
     adverts_path: str = typer.Option("adverts.json", help="Путь к json с объявлениями"),
