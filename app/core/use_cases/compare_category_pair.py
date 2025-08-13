@@ -39,6 +39,9 @@ class CompareCategoryPairUseCase:
         for category1, category2 in itertools.combinations(category_list, 2):
             pair_key = (category1.id, category2.id)
             diff_text = self.category_pair_repo.get(pair_key)
+
+            diff_text = "found!" # <--------- remove
+
             if not diff_text:
                 print(f"[{category1.id}:{category2.id}] diff isn't found, preparing ...")
                 diff_text = self._prep_categories_diff(category1, category2)
