@@ -61,14 +61,13 @@ class PairwiseClassificationUseCase:
         prompt = format_prompt(
             category_pair_prediction_prompt,
             advert=advert,
-            category1={**category_diff.category1.model_dump(), "tf_idf": category1_keywords},
-            category2={**category_diff.category2.model_dump(), "tf_idf": category2_keywords}
-        #
-        # category1=category_diff.category1,
-        #     category2=category_diff.category2,
-        #     difference=category_diff.difference,
+            category1=category_diff.category1,
+            category2=category_diff.category2,
+            category1_keywords=category1_keywords,
+            category2_keywords=category2_keywords,
+            # difference=category_diff.difference,
         )
-        print(f"category_pair_prediction_prompt:\n {prompt}\n\n")
+        # print(f"category_pair_prediction_prompt:\n {prompt}\n\n")
         model_result = self.llm.generate(prompt)
 
         predicted_category = parse_prediction(model_result)
