@@ -54,14 +54,20 @@ class PairwiseClassificationUseCase:
         return None
 
     def _predict_category(self, advert: Advert, category_diff: CategoryDiff) -> PredictionConfidence | None:
+
+        category1_keywords = ', '.join(category_diff.category1.tf_idf) if category_diff.category1.tf_idf else ''
+        category2_keywords = ', '.join(category_diff.category2.tf_idf) if category_diff.category2.tf_idf else ''
+
         prompt = format_prompt(
             category_pair_prediction_prompt,
             advert=advert,
             category1=category_diff.category1,
             category2=category_diff.category2,
-            difference=category_diff.difference,
+            category1_keywords=category1_keywords,
+            category2_keywords=category2_keywords,
+            # difference=category_diff.difference,
         )
-        # print(f"category_pair_prediction_prompt:\n {prompt}")
+        # print(f"category_pair_prediction_prompt:\n {prompt}\n\n")
         model_result = self.llm.generate(prompt)
 
         predicted_category = parse_prediction(model_result)
