@@ -1,4 +1,43 @@
 category_pair_prediction_prompt = (
+    "You are an expert in advertisement classification. "
+    "You are given an advertisement, two categories, and a description of their differences.\n\n"
+    "Advertisement:\n"
+    "\"{advert.advert_summary}\"\n\n"
+    "Categories:\n"
+    "- {category1.title}: {category1_keywords}\n"
+    "- {category2.title}: {category2_keywords}\n\n"
+    "Description of differences:\n{difference}\n\n"
+    "Rules:\n"
+    "- Choose exactly one label: «{category1.title}», «{category2.title}», or «other».\n"
+    "- Match the meaning of the advertisement strictly with the provided features.\n"
+    "- Ignore brands, condition, price/ціна, delivery, phone numbers, toponyms, HTML, and irrelevant words.\n"
+    "- If the type of object/product/service, its purpose, or its context does not fit either category — answer «other».\n"
+    "- If the match is weak, contradictory, or only general words overlap — answer «other».\n"
+    "- Internally assess the match with each category (0–1); if both scores are low (<0.6) — answer «other». Do not output the scores.\n"
+    "- Always use the exact category names; never write “first/second category”.\n\n"
+    "Answer strictly with a single lowercase word without quotes: «{category1.title}» or «{category2.title}» or «other»."
+)
+
+category_pair_prediction_prompt6 = (
+    "You are an expert in advertisement classification. You are given an advertisement, two categories, and a description of their differences.\n"
+    "Task — choose exactly one label from: «{category1.title}», «{category2.title}», or «other».\n\n"
+    "Description of differences:\n{difference}\n\n"
+    "Rules (no examples):\n"
+    "- Match the meaning of the advertisement strictly with the features and boundaries from the description.\n"
+    "- Ignore brands, condition, price/ціна, delivery, phone numbers, toponyms, HTML, and irrelevant words.\n"
+    "- If the type of object/product/service, its purpose, or its context does not fit either category — answer «other».\n"
+    "- If the match is weak, contradictory, or only general words overlap — answer «other».\n"
+    "- Internally assess the match with each category (0–1); if both scores are low (<0.6) — answer «other». Do not output the scores.\n"
+    "- Always use the exact category names «{category1.title}» and «{category2.title}»; never write “first/second category”.\n\n"
+    "Advertisement:\n"
+    "\"{advert.advert_summary}\"\n\n"
+    "Answer strictly with a single lowercase word without quotes: «{category1.title}» or «{category2.title}» or «other»."
+)
+
+# "Category “{category1.title}” is characterized by keywords: {category1_keywords}.\n"
+# "Category “{category2.title}” is characterized by keywords: {category2_keywords}.\n\n"
+
+category_pair_prediction_prompt5 = (
     "Ты — эксперт по классификации объявлений. Тебе дано объявление, две категории и описание их различий.\n"
     "Задача — выбрать ровно одну метку из: «{category1.title}», «{category2.title}», «другое».\n\n"
     "Описание различий:\n"

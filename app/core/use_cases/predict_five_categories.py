@@ -22,12 +22,6 @@ class PredictFiveCategoriesUseCase:
         )
         model_result = self.llm.generate(prompt)
         predicted_categories = self._parse_top_categories(model_result)
-
-        if advert.category_title in predicted_categories:
-            print(f"[!] advert category among 5 categories: {advert.category_title}")
-        else:
-            print(f"advert_category={advert.category_title}, predicted_categories={predicted_categories}")
-
         return self._prep_output(predicted_categories)
 
     def _get_categories_with_keywords(self) -> str:

@@ -1,4 +1,28 @@
 category_kw_prediction_prompt = (
+    "You are an advertisement classifier. "
+    "Analyze the advertisement text and choose the most appropriate category from the list.\n\n"
+    "Advertisement:\n"
+    "\"{advert_text}\"\n\n"
+    "Categories with keywords:\n"
+    "{categories_with_keywords}\n\n"
+    "Each category is provided in the format:\n"
+    "- category: keyword1, keyword2, ...\n\n"
+    "Answer strictly with the category name only."
+)
+
+category_kw_prediction_prompt2 = (
+    "You are an advertisement classifier. "
+    "Analyze the advertisement text and choose the most appropriate category from the list.\n\n"
+    "Advertisement:\n"
+    "\"{advert_text}\"\n\n"
+    "List of categories with keywords:\n"
+    "{categories_with_keywords}\n\n"
+    "Each category is provided in the format:\n"
+    "- category: keyword1, keyword2, ...\n\n"
+    "Answer strictly with the category name only. "
+)
+
+category_kw_prediction_prompt1 = (
     "Ты — классификатор объявлений. "
     "Проанализируй текст объявления и выбери наиболее подходящую категорию из списка.\n\n"
     'Объявление:\n"{advert_title} {advert_text}"\n\n'

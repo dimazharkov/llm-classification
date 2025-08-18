@@ -24,16 +24,13 @@ class ExperimentThreeUseCase:
         start = time.perf_counter()
         five_predicted_categories = self.predict_five_categories_use_case.run(advert)
         print(f"predict_five_categories_use_case: {time.perf_counter() - start:.2f} s")
-        # print("- " * 20)
 
         start = time.perf_counter()
         category_pair_differences = self.compare_category_pair_use_case.run(five_predicted_categories, self.rate_limit)
         print(f"compare_category_pair_use_case: {time.perf_counter() - start:.2f} s")
-        # print("- " * 20)
 
         start = time.perf_counter()
         result = self.pairwise_classification_use_case.run(advert, category_pair_differences, self.rate_limit)
         print(f"pairwise_classification_use_case: {time.perf_counter() - start:.2f} s")
-        # print("- " * 20)
 
         return result

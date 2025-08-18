@@ -2,7 +2,7 @@ from app.core.contracts.experiment_contract import ExperimentContract
 from app.core.contracts.llm_client_contract import LLMClientContract
 from app.core.domain.advert import Advert
 from app.core.dto.category_prediction import AdvertCategoryPrediction
-from app.core.helpers.prompt_helper import format_prompt, parse_prediction_and_confidence
+from app.core.helpers.prompt_helper import format_prompt, parse_prediction_and_confidence, parse_prediction
 from app.core.prompts.category_prediction_prompt import category_prediction_prompt
 from app.repositories.category_file_repository import CategoryFileRepository
 
@@ -22,13 +22,12 @@ class ExperimentOneUseCase(ExperimentContract):
 
         model_result = self.llm.generate(prompt)
 
-        predicted_category, confidence = parse_prediction_and_confidence(model_result)
+        predicted_category = parse_prediction(model_result)
 
         if predicted_category:
             return AdvertCategoryPrediction(
                 advert_category=advert.category_title,
-                predicted_category=predicted_category,
-                confidence=confidence,
+                predicted_category=predicted_category
             )
 
         return None

@@ -1,4 +1,20 @@
 category_difference_prompt = (
+    "You are an expert in classifying and comparing advertisement categories. "
+    "Based on the provided data, clearly define the main difference between the two categories.\n\n"
+    "Category **{category1.title}**:\n"
+    "- Keywords: {category1.keywords}\n"
+    "Category **{category2.title}**:\n"
+    "- Keywords: {category2.keywords}\n"
+    "Formulate the difference in two or three information-rich sentences. Always use the **exact category names** — “{category1.title}” and “{category2.title}”. "
+    "Explain how the categories differ in terms of content, objects, purpose, target audience, or usage context. "
+    "Do not write vague or generic phrases. Do not use constructions like 'the first category' or 'the second category'. "
+    "Ignore toponyms and service words (e.g. price/ціна, delivery/доставка, phone/тетефон, photo/фото, used/б/у, new/нове, etc.). "
+    "The answer must be information-dense and suitable for machine processing.\n\n"
+    "Example answer:\n"
+    "Основна відмінність між «{category1.title}» та «{category2.title}» полягає у тому, що ..."
+)
+
+category_difference_prompt5 = (
     "Ты — эксперт по классификации и сравнению категорий объявлений. "
     "На основе представленных данных чётко определи основное различие между двумя категориями.\n\n"
     "Категория **{category1.title}**:\n"

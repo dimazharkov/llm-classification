@@ -20,7 +20,7 @@ class PairwiseClassificationUseCase:
         self,
         advert: Advert,
         category_pair_diff: CategoryPairDiffRepository,
-        rate_limit: int = 1,
+        rate_limit: float = 0.5,
     ) -> AdvertCategoryPrediction | None:
         self.category_evaluator.init(category_pair_diff.all_titles())
 
@@ -41,20 +41,16 @@ class PairwiseClassificationUseCase:
             time.sleep(rate_limit)
 
         category, score = self.category_evaluator.best()
-        # print("*" * 10)
-        # print(f"predicted category: {category if category else ""}")
-        # print("*" * 10)
+
         if category:
             return AdvertCategoryPrediction(
                 advert_category=advert.category_title,
                 predicted_category=category,
-                confidence=score,
             )
 
         return None
 
     def _predict_category(self, advert: Advert, category_diff: CategoryDiff) -> PredictionConfidence | None:
-
         category1_keywords = ', '.join(category_diff.category1.tf_idf) if category_diff.category1.tf_idf else ''
         category2_keywords = ', '.join(category_diff.category2.tf_idf) if category_diff.category2.tf_idf else ''
 
@@ -65,17 +61,14 @@ class PairwiseClassificationUseCase:
             category2=category_diff.category2,
             category1_keywords=category1_keywords,
             category2_keywords=category2_keywords,
-            # difference=category_diff.difference,
+            difference=category_diff.difference,
         )
-        # print(f"category_pair_prediction_prompt:\n {prompt}\n\n")
+
         model_result = self.llm.generate(prompt)
 
         predicted_category = parse_prediction(model_result)
-        # print("." * 10)
-        # print(f"model_response={predicted_category}")
-        # print("." * 10)
+
         if predicted_category:
             return PredictionConfidence(prediction=predicted_category)
 
-        # print("-" * 10)
         return None

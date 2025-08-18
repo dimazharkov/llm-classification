@@ -7,11 +7,13 @@ class AdvertCategoryPrediction(BaseModel):
     advert_id: Optional[int] = None
     advert_category: str
     predicted_category: Optional[str] = None
-    confidence: Optional[float] = None
+    # confidence: Optional[float] = None
 
-    @field_validator("confidence")
-    def round_confidence(cls, v):
-        return round(v, 2)
+    # @field_validator("confidence")
+    # def round_confidence(cls, v):
+    #     if v is None:
+    #         return None
+    #     return round(v, 2)
 
     # @property
     @computed_field

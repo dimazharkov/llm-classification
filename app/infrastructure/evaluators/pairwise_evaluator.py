@@ -27,8 +27,8 @@ class PairwiseEvaluator:
                 self.matrix[i][j] = 0.5
                 self.matrix[j][i] = 2
             else:
-                self.matrix[i][j] = 1
-                self.matrix[j][i] = 1
+                self.matrix[i][j] = 0   # 1
+                self.matrix[j][i] = 0   # 1
 
     def scores(self):
         weights = gmean(self.matrix, axis=1)
@@ -59,6 +59,5 @@ class PairwiseEvaluator:
 
         max_wins = max(wins.values())
         final_candidates = [label for label, count in wins.items() if count == max_wins]
-
         winner = sorted(final_candidates)[0]
         return winner, score_dict[winner]
