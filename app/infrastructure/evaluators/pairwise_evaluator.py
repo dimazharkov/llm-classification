@@ -21,14 +21,14 @@ class PairwiseEvaluator:
         i, j = self.index_map[label1], self.index_map[label2]
         if self.matrix is not None:
             if winner == label1:
-                self.matrix[i][j] = 2
+                self.matrix[i][j] = 2.0
                 self.matrix[j][i] = 0.5
             elif winner == label2:
                 self.matrix[i][j] = 0.5
-                self.matrix[j][i] = 2
+                self.matrix[j][i] = 2.0
             else:
-                self.matrix[i][j] = 0   # 1
-                self.matrix[j][i] = 0   # 1
+                self.matrix[i][j] = 1.0
+                self.matrix[j][i] = 1.0
 
     def scores(self):
         weights = gmean(self.matrix, axis=1)
