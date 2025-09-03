@@ -1,0 +1,9 @@
+from typing import Protocol
+
+from core.domain.category import Category
+
+
+class CategoryRepository(Protocol):
+    def get_all(self) -> list[Category]: ...
+    def get_titles_str(self) -> str: ...
+    def get_all_with_kw(self) -> str: ...

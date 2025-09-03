@@ -1,3 +1,13 @@
+[project]
+name = "myapp"
+version = "0.1.0"
+dependencies = [
+    "typer>=0.9.0",
+]
+
+[project.scripts]
+myapp = "interfaces.cli.main:main"
+
 [tool.black]
 line-length = 121
 target-version = ['py312']
