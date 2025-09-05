@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.preprocessing import LabelEncoder
 
+
 def calc_accuracy(y_true, y_pred) -> float:
     return float(accuracy_score(y_true, y_pred))
 

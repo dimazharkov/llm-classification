@@ -10,7 +10,9 @@ class LLMClientRunner(LLMClient):
         self.llm_client = llm_client
         self.strat_registry = strat_registry
 
-    def run_with(self, strategy: PromptStrategy[StrategyContextType, StrategyResultType], ctx: StrategyContextType) -> StrategyResultType:
+    def run_with(
+        self, strategy: PromptStrategy[StrategyContextType, StrategyResultType], ctx: StrategyContextType,
+    ) -> StrategyResultType:
         prompt = strategy.build_prompt(ctx)
         response = self.llm_client.generate(prompt)
         return strategy.parse_response(response)

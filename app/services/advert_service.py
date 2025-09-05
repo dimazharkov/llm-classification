@@ -3,10 +3,10 @@ from collections.abc import Iterable
 
 from core.contracts.llm_client import LLMClient
 from core.domain.advert import Advert
-from infra.schemas.advert_raw import AdvertRaw
 from core.types.category_prediction import PredictedCategory
 from core.use_cases.preprocess_adverts import PreprocessAdvertsUseCase
 from core.use_cases.summarize_advert import SummarizeAdvertUseCase
+from infra.schemas.advert_raw import AdvertRaw
 from infra.storage.os_helper import load_from_disc, save_to_disc
 
 

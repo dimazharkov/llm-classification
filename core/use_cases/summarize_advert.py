@@ -1,8 +1,8 @@
+from app.resources.prompt_strategies.advert_summarize_prompt import advert_summarize_prompt
 from core.contracts.llm_client import LLMClient
 from core.contracts.use_case_contract import UseCaseContract
 from core.domain.advert import Advert
 from core.policies.prompt_helper import format_prompt
-from app.resources.prompt_strategies.advert_summarize_prompt import advert_summarize_prompt
 
 
 class SummarizeAdvertUseCase(UseCaseContract):

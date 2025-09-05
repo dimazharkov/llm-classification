@@ -1,0 +1,23 @@
+from core.contracts.category_repository import CategoryRepository
+from core.contracts.llm_runner import LLMRunner
+from core.domain.advert import Advert
+from core.domain.category import Category
+
+
+class PredictNCategoriesUseCase:
+    def __init__(self, llm_runner: LLMRunner, category_repo: CategoryRepository):
+        self.llm_runner = llm_runner
+        self.category_repo = category_repo
+
+    def run(self, advert: Advert) -> list[Category]:
+        context = {
+            "advert_title": advert.advert_title,
+            "advert_text": advert.advert_text,
+            "categories_with_keywords": self.category_repo.get_all_with_kw(),
+        }
+
+        category_titles_list = self.llm_runner.run("n_category_kw_prediction", context)
+
+        return self.category_repo.get_by_titles(
+            category_titles_list
+        )

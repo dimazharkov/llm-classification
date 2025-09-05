@@ -2,7 +2,7 @@ category_kw_five_prediction_prompt = (
     "You are an advertisement classifier. "
     "Analyze the advertisement text and select the three most suitable categories from the list.\n\n"
     "Advertisement:\n"
-    "\"{advert_title} {advert_text}\"\n\n"
+    '"{advert_title} {advert_text}"\n\n'
     "List of categories with keywords:\n"
     "{categories_with_keywords}\n\n"
     "Each category is provided in the format:\n"

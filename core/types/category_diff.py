@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+
 from core.domain.category import Category
+
 
 @dataclass(frozen=True, slots=True)
 class CategoryDiff:

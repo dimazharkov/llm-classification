@@ -27,5 +27,4 @@ class CategoryPairPrediction(PromptStrategy):
             "Answer strictly with a single lowercase word without quotes: «{category1.title}» or «{category2.title}» or «other»."
         )
 
-    def parse_response(self, raw: str) -> dict[str, Any]:
-        ...
+    def parse_response(self, raw: str) -> dict[str, Any]: ...

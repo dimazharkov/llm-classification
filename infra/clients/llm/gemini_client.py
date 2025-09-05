@@ -1,4 +1,5 @@
 import time
+
 from google import genai
 from google.genai import types
 
@@ -34,11 +35,7 @@ class GeminiClient(LLMClient):
 
         config = types.GenerateContentConfig(**config_params)
 
-        response = self.client.models.generate_content(
-            model=self.model_name,
-            contents=prompt,
-            config=config
-        )
+        response = self.client.models.generate_content(model=self.model_name, contents=prompt, config=config)
 
         return response.text
 
@@ -48,7 +45,9 @@ class GeminiClient(LLMClient):
                 return self.run(prompt, instructions)
             except Exception as e:
                 wait_time = base_delay * (attempt + 1)
-                print(f"Unexpected error: {e}. Waiting {wait_time} seconds before retrying... ({attempt + 1}/{max_retries})")
+                print(
+                    f"Unexpected error: {e}. Waiting {wait_time} seconds before retrying... ({attempt + 1}/{max_retries})",
+                )
                 time.sleep(wait_time)
         print("Max retries reached. Skipping this request.")
         return ""

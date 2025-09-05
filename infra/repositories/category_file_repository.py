@@ -20,6 +20,9 @@ class CategoryFileRepository(CategoryRepository):
     def get_titles_str(self):
         return ", ".join(category.title for category in self.data)
 
+    def get_by_titles(self, titles_list: list[str]) -> list[Category]:
+        return [category for category in self.get_all() if category.title in titles_list]
+
     def _load(self, path: str) -> list[Category]:
         raw: list[dict[str, Any]] = load_from_disc(path)
         return [schema_to_category(CategorySchema.model_validate(c)) for c in raw]

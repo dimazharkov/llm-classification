@@ -2,12 +2,15 @@ import itertools
 import time
 from dataclasses import dataclass
 
+from app.resources.prompt_strategies.category_difference_prompt import category_difference_prompt
+from core.contracts.category_pair_repository import CategoryPairRepository
+from core.contracts.category_repository import CategoryRepository
 from core.contracts.llm_client import LLMClient
+from core.contracts.llm_runner import LLMRunner
 from core.domain.advert import Advert
 from core.domain.category import Category
-from core.types.category_diff import CategoryDiff
 from core.policies.prompt_helper import format_prompt
-from app.resources.prompt_strategies.category_difference_prompt import category_difference_prompt
+from core.types.category_diff import CategoryDiff
 from infra.repositories.advert_file_repository import AdvertFileRepository
 from infra.repositories.category_pair_diff_repository import CategoryPairDiffRepository
 from infra.repositories.category_pair_file_repository import CategoryPairFileRepository
@@ -21,14 +24,9 @@ class CategoryData:
 
 
 class CompareCategoryPairUseCase:
-    def __init__(
-        self,
-        llm: LLMClient,
-        advert_repo: AdvertFileRepository,
-        category_pair_repo: CategoryPairFileRepository,
-    ):
-        self.llm = llm
-        self.advert_repo = advert_repo
+    def __init__(self, llm_runner: LLMRunner, category_repo: CategoryRepository, category_pair_repo: CategoryPairRepository):
+        self.llm_runner = llm_runner
+        self.category_repo = category_repo
         self.category_pair_repo = category_pair_repo
 
     def run(self, category_list: list[Category], rate_limit: float = 0.5) -> CategoryPairDiffRepository:

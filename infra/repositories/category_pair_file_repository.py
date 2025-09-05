@@ -3,6 +3,7 @@ from __future__ import annotations
 import atexit
 from typing import TYPE_CHECKING
 
+from core.contracts.category_pair_repository import CategoryPairRepository
 from infra.storage.os_helper import load_from_disc, save_to_disc
 from shared.helpers.category_pair_utils import normalize_pair, split_pair_key
 
@@ -13,14 +14,14 @@ if TYPE_CHECKING:
     from shared.types.category_id_pair import CategoryIdPair
 
 
-class CategoryPairFileRepository:
+class CategoryPairFileRepository(CategoryPairRepository):
     def __init__(self, path: str | Path) -> None:
         self._path = path
         self._data: dict[CategoryIdPair, str] = self.load()
         self.updated = False
         atexit.register(self.save)
 
-    def all(self) -> Iterable[tuple[CategoryIdPair, str]]:
+    def get_all(self) -> Iterable[tuple[CategoryIdPair, str]]:
         return self._data.items()
 
     def get(self, pair: CategoryIdPair) -> str | None:

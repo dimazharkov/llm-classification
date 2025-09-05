@@ -1,11 +1,12 @@
 from typing import Any
 
 from core.contracts.prompt_strategy import PromptStrategy
+from shared.helpers.text_pipeline import normalize_and_fix_latin_pipeline
 
 
-class NCategoryKwPrediction(PromptStrategy):
+class NCategoryKwPrediction(PromptStrategy[dict[str, Any], list[str]]):
     name = "n_category_kw_prediction"
-    
+
     def build_prompt(self, ctx: dict[str, Any]) -> str:
         return (
             "You are an advertisement classifier. "
@@ -19,5 +20,7 @@ class NCategoryKwPrediction(PromptStrategy):
             "Answer strictly with a list of three categories, one per line, without numbering, quotes, dashes, keywords, formatting, or explanations.\n\n"
         )
 
-    def parse_response(self, raw: str) -> dict[str, Any]:
-        ...
+    def parse_response(self, raw: str) -> list[str]:
+        lines = [line.strip("- ") for line in raw.strip().split("\n")]
+        return [normalize_and_fix_latin_pipeline(line) for line in lines if line]
+

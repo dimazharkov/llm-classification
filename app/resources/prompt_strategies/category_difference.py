@@ -23,5 +23,4 @@ class CategoryDifference(PromptStrategy):
             f"Основна відмінність між {ctx['category1']['title']!r} та {ctx['category2']['title']!r} полягає у тому, що ..."
         )
 
-    def parse_response(self, raw: str) -> dict[str, Any]:
-        ...
+    def parse_response(self, raw: str) -> dict[str, Any]: ...

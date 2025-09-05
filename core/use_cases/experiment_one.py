@@ -1,4 +1,3 @@
-from typing import Optional
 
 from core.contracts.category_repository import CategoryRepository
 from core.contracts.llm_runner import LLMRunner
@@ -12,20 +11,18 @@ class ExperimentOneUseCase(UseCase):
         self.llm_runner = llm_runner
         self.category_repo = category_repo
 
-    def run(self, advert: Advert) -> Optional[PredictedCategory]:
+    def run(self, advert: Advert) -> PredictedCategory | None:
         context = {
             "advert_title": advert.advert_title,
             "advert_text": advert.advert_text,
-            "category_titles": self.category_repo.get_titles_str()
+            "category_titles": self.category_repo.get_titles_str(),
         }
 
         predicted_category = self.llm_runner.run("category_prediction", context)
 
         if predicted_category:
             return PredictedCategory(
-                advert_id=advert.advert_id,
-                advert_category=advert.category_title,
-                predicted_category=predicted_category
+                advert_id=advert.advert_id, advert_category=advert.category_title, predicted_category=predicted_category,
             )
 
         return None

@@ -3,13 +3,13 @@ from collections.abc import Iterable
 from core.domain.advert import Advert
 from core.domain.category import Category
 from core.use_cases.build_category_bow import BuildCategoryBowUseCase
-from infra.repositories.category_pair_file_repository import CategoryPairFileRepository
-from infra.schemas.category_raw import CategoryRaw
 from core.use_cases.compare_category_pair import CompareCategoryPairUseCase
 from core.use_cases.preprocess_categories import PreprocessCategoriesUseCase
-from infra.storage.os_helper import load_from_disc, save_to_disc
 from infra.clients.llm.gemini_client import GeminiClient
 from infra.repositories.advert_file_repository import AdvertFileRepository
+from infra.repositories.category_pair_file_repository import CategoryPairFileRepository
+from infra.schemas.category_raw import CategoryRaw
+from infra.storage.os_helper import load_from_disc, save_to_disc
 
 
 class CategoryService:

@@ -1,12 +1,12 @@
 import time
 
+from app.resources.prompt_strategies.category_pair_prediction_prompt import category_pair_prediction_prompt
 from core.contracts.llm_client import LLMClient
 from core.domain.advert import Advert
+from core.policies.prompt_helper import format_prompt, parse_prediction
 from core.types.category_diff import CategoryDiff
 from core.types.category_prediction import PredictedCategory
 from core.types.prediction_confidence import PredictionConfidence
-from core.policies.prompt_helper import format_prompt, parse_prediction
-from app.resources.prompt_strategies.category_pair_prediction_prompt import category_pair_prediction_prompt
 from infra.evaluators.pairwise_evaluator import PairwiseEvaluator
 from infra.repositories.category_pair_diff_repository import CategoryPairDiffRepository
 
@@ -51,8 +51,8 @@ class PairwiseClassificationUseCase:
         return None
 
     def _predict_category(self, advert: Advert, category_diff: CategoryDiff) -> PredictionConfidence | None:
-        category1_keywords = ', '.join(category_diff.category1.tf_idf) if category_diff.category1.tf_idf else ''
-        category2_keywords = ', '.join(category_diff.category2.tf_idf) if category_diff.category2.tf_idf else ''
+        category1_keywords = ", ".join(category_diff.category1.tf_idf) if category_diff.category1.tf_idf else ""
+        category2_keywords = ", ".join(category_diff.category2.tf_idf) if category_diff.category2.tf_idf else ""
 
         prompt = format_prompt(
             category_pair_prediction_prompt,

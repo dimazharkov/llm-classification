@@ -2,7 +2,7 @@ category_prediction_prompt = (
     "You are an advertisement classifier. "
     "Analyze the advertisement text and choose the most appropriate category from the list.\n\n"
     "Advertisement:\n"
-    "\"{advert_text}\"\n\n"
+    '"{advert_text}"\n\n'
     "Categories:\n{category_titles}\n\n"
     "Answer strictly with the category name only."
 )
@@ -11,7 +11,7 @@ category_prediction_prompt3 = (
     "You are an advertisement classifier. "
     "Analyze the advertisement text and choose the most appropriate category from the list.\n\n"
     "Advertisement:\n"
-    "\"{advert_text}\"\n\n"
+    '"{advert_text}"\n\n'
     "List of categories:\n{category_titles}\n\n"
     "Answer strictly with the category name only."
 )

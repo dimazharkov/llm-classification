@@ -22,5 +22,4 @@ class AdvertSummarize(PromptStrategy[str]):
             "Return only the words separated by spaces, with no period at the end and no line breaks."
         )
 
-    def parse_response(self, raw: str) -> str:
-        ...
+    def parse_response(self, raw: str) -> str: ...

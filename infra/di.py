@@ -5,11 +5,11 @@ from app.resources.prompt_strategies.category_prediction import CategoryPredicti
 from app.services.experiment_service import ExperimentService
 from core.use_cases.experiment_one import ExperimentOneUseCase
 from core.use_cases.experiment_two import ExperimentTwoUseCase
+from infra.clients.llm.client_runner import LLMClientRunner
+from infra.clients.llm.gemini_client import GeminiClient
 from infra.clients.llm.openai_client import OpenAIClient
 from infra.clients.llm.prompt_registry import PromptRegistry
-from infra.clients.llm.client_runner import LLMClientRunner
 from infra.evaluators.classification_evaluator import ClassificationEvaluator
-from infra.clients.llm.gemini_client import GeminiClient
 from infra.repositories.advert_file_repository import AdvertFileRepository
 from infra.repositories.category_file_repository import CategoryFileRepository
 from infra.repositories.experiment_file_repository import ExperimentFileRepository
@@ -21,11 +21,7 @@ class Container(containers.DeclarativeContainer):
     gemini_client = providers.Singleton(GeminiClient)
     openai_client = providers.Singleton(OpenAIClient)
 
-    llm_client = providers.Selector(
-        config.llm_client_name,
-        openai=openai_client,
-        gemini=gemini_client
-    )
+    llm_client = providers.Selector(config.llm_client_name, openai=openai_client, gemini=gemini_client)
 
     prompt_strategies = providers.List(
         providers.Singleton(CategoryPrediction),
@@ -51,10 +47,7 @@ class Container(containers.DeclarativeContainer):
     experiment_repo = providers.Factory(ExperimentFileRepository, path=config.target_path)
 
     experiment_service = providers.Factory(
-        ExperimentService,
-        advert_repo=advert_repo,
-        experiment_repo=experiment_repo,
-        evaluator=classification_evaluator
+        ExperimentService, advert_repo=advert_repo, experiment_repo=experiment_repo, evaluator=classification_evaluator,
     )
 
     experiment_one = providers.Factory(ExperimentOneUseCase, llm_runner=llm_runner, category_repo=category_repo)

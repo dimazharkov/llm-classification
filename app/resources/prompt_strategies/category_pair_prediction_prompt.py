@@ -2,7 +2,7 @@ category_pair_prediction_prompt = (
     "You are an expert in advertisement classification. "
     "You are given an advertisement, two categories, and a description of their differences.\n\n"
     "Advertisement:\n"
-    "\"{advert.advert_summary}\"\n\n"
+    '"{advert.advert_summary}"\n\n'
     "Categories:\n"
     "- {category1.title}: {category1_keywords}\n"
     "- {category2.title}: {category2_keywords}\n\n"
@@ -30,7 +30,7 @@ category_pair_prediction_prompt6 = (
     "- Internally assess the match with each category (0–1); if both scores are low (<0.6) — answer «other». Do not output the scores.\n"
     "- Always use the exact category names «{category1.title}» and «{category2.title}»; never write “first/second category”.\n\n"
     "Advertisement:\n"
-    "\"{advert.advert_summary}\"\n\n"
+    '"{advert.advert_summary}"\n\n'
     "Answer strictly with a single lowercase word without quotes: «{category1.title}» or «{category2.title}» or «other»."
 )
 

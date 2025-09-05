@@ -13,9 +13,8 @@ def one(
     num_cases: int = typer.Option(1000, help="Количество экспериментов"),
     rate_limit: float = typer.Option(0.5, help="Задержка между запросами"),
 ) -> None:
-    experiment_one(
-        adverts_path, categories_path, target_path, num_cases, rate_limit
-    )
+    experiment_one(adverts_path, categories_path, target_path, num_cases, rate_limit)
+
 
 @app.command()
 def two(
@@ -25,9 +24,9 @@ def two(
     num_cases: int = typer.Option(1000, help="Количество экспериментов"),
     rate_limit: float = typer.Option(0.5, help="Задержка между запросами"),
 ) -> None:
-    experiment_two(
-        adverts_path, categories_path, target_path, num_cases, rate_limit
-    )
+    experiment_two(adverts_path, categories_path, target_path, num_cases, rate_limit)
+
+
 #
 # @app.command()
 # def three(
