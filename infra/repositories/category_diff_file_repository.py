@@ -1,11 +1,12 @@
 from collections.abc import Iterable
 
+from core.contracts.category_diff_repository import CategoryDiffRepository
 from core.types.category_diff import CategoryDiff
 from shared.helpers.category_pair_utils import normalize_pair
 from shared.types.category_id_pair import CategoryIdPair
 
 
-class CategoryPairDiffRepository:
+class CategoryDiffFileRepository(CategoryDiffRepository):
     __slots__ = ("_data",)
 
     def __init__(self) -> None:

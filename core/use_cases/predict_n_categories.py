@@ -2,6 +2,7 @@ from core.contracts.category_repository import CategoryRepository
 from core.contracts.llm_runner import LLMRunner
 from core.domain.advert import Advert
 from core.domain.category import Category
+from core.policies.prompt_context_builders import advert_to_prompt_ctx
 
 
 class PredictNCategoriesUseCase:
@@ -11,9 +12,8 @@ class PredictNCategoriesUseCase:
 
     def run(self, advert: Advert) -> list[Category]:
         context = {
-            "advert_title": advert.advert_title,
-            "advert_text": advert.advert_text,
-            "categories_with_keywords": self.category_repo.get_all_with_kw(),
+            "advert": advert_to_prompt_ctx(advert),
+            "categories_with_kw": self.category_repo.get_all_with_kw(),
         }
 
         category_titles_list = self.llm_runner.run("n_category_kw_prediction", context)

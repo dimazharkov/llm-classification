@@ -19,12 +19,12 @@ class ExperimentThreeUseCase:
         self.pairwise_classification = pairwise_classification
 
     def run(self, advert: Advert) -> PredictedCategory | None:
-        five_predicted_categories = self.predict_n_categories.run(
+        predicted_categories = self.predict_n_categories.run(
             advert
         )
 
         category_pair_differences = self.compare_category_pair.run(
-            five_predicted_categories
+            predicted_categories
         )
 
         return self.pairwise_classification.run(

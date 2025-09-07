@@ -11,7 +11,7 @@ class CategoryKwPrediction(PromptStrategy[dict[str, Any], str]):
             "You are an advertisement classifier. "
             "Analyze the advertisement text and choose the most appropriate category from the list.\n\n"
             "Advertisement:\n"
-            f"{ctx['advert_text']!r}\n\n"
+            f"{ctx['advert']['text']!r}\n\n"
             "Categories with keywords:\n"
             f"{ctx['categories_with_kw']}\n\n"
             "Each category is provided in the format:\n"

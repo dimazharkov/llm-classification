@@ -3,7 +3,7 @@ from typing import Any
 from core.contracts.prompt_strategy import PromptStrategy
 
 
-class AdvertSummarize(PromptStrategy[str]):
+class AdvertSummarize(PromptStrategy[dict[str, Any], str]):
     name = "advert_summarize"
 
     def build_prompt(self, ctx: dict[str, Any]) -> str:
@@ -22,4 +22,5 @@ class AdvertSummarize(PromptStrategy[str]):
             "Return only the words separated by spaces, with no period at the end and no line breaks."
         )
 
-    def parse_response(self, raw: str) -> str: ...
+    def parse_response(self, raw: str) -> str:
+        return raw.strip()

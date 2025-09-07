@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass(frozen=True, slots=True)
@@ -7,5 +8,5 @@ class Advert:
     category_title: str
     advert_title: str
     advert_text: str
-    advert_summary: str | None = None
-    advert_id: int | None = None
+    advert_summary: Optional[str] = None
+    advert_id: Optional[int] = None

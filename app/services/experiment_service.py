@@ -3,14 +3,14 @@ import time
 from typing import Any
 
 from core.contracts.advert_repository import AdvertRepository
-from core.contracts.experiment_evaluator import ExperimentEvaluator
 from core.contracts.experiment_repository import ExperimentRepository
 from core.contracts.use_case import UseCase
+from core.policies.evaluators.classification_evaluator import ClassificationEvaluator
 
 
 class ExperimentService:
     def __init__(
-        self, advert_repo: AdvertRepository, experiment_repo: ExperimentRepository, evaluator: ExperimentEvaluator,
+        self, advert_repo: AdvertRepository, experiment_repo: ExperimentRepository, evaluator: ClassificationEvaluator,
     ) -> None:
         self.advert_repo = advert_repo
         self.experiment_repo = experiment_repo

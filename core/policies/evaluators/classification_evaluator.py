@@ -1,12 +1,11 @@
 import numpy as np
 from sklearn.metrics import f1_score, precision_score, recall_score
 
-from core.contracts.experiment_evaluator import ExperimentEvaluator
 from core.types.category_prediction import PredictedCategory
 from core.types.classification_metrics import ClassificationMetrics
 
 
-class ClassificationEvaluator(ExperimentEvaluator):
+class ClassificationEvaluator:
     def calculate(self, prediction_list: list[PredictedCategory]) -> ClassificationMetrics:
         y_true, y_pred = zip(*[(r.advert_category, r.predicted_category) for r in prediction_list], strict=False)
         return ClassificationMetrics(

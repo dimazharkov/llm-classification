@@ -3,6 +3,7 @@ from core.contracts.category_repository import CategoryRepository
 from core.contracts.llm_runner import LLMRunner
 from core.contracts.use_case import UseCase
 from core.domain.advert import Advert
+from core.policies.prompt_context_builders import advert_to_prompt_ctx
 from core.types.category_prediction import PredictedCategory
 
 
@@ -13,8 +14,7 @@ class ExperimentTwoUseCase(UseCase):
 
     def run(self, advert: Advert) -> PredictedCategory | None:
         context = {
-            "advert_title": advert.advert_title,
-            "advert_text": advert.advert_text,
+            "advert": advert_to_prompt_ctx(advert),
             "categories_with_kw": self.category_repo.get_all_with_kw(),
         }
 
@@ -22,7 +22,9 @@ class ExperimentTwoUseCase(UseCase):
 
         if predicted_category:
             return PredictedCategory(
-                advert_id=advert.advert_id, advert_category=advert.category_title, predicted_category=predicted_category,
+                advert_id=advert.advert_id,
+                advert_category=advert.category_title,
+                predicted_category=predicted_category
             )
 
         return None
