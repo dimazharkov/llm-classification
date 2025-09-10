@@ -21,7 +21,7 @@ pre-commit:
     4-check-type-hints:
       tags: slowpoke
       glob: "*.py"
-      run: ./venv/bin/mypy app settings tests
+      run: ./venv/bin/mypy src
 
     5-check-complexity:
       tags: slowpoke
@@ -42,7 +42,7 @@ pre-push:
     check-type-hints:
       tags: slowpoke
       glob: "*.py"
-      run: ./venv/bin/mypy app settings tests
+      run: ./venv/bin/mypy src
 
     check-complexity:
       tags: slowpoke
