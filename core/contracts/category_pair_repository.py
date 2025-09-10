@@ -1,9 +1,0 @@
-from typing import Protocol
-
-from shared.types.category_id_pair import CategoryIdPair
-
-
-class CategoryPairRepository(Protocol):
-    def get(self, pair: CategoryIdPair) -> str | None: ...
-    def add(self, pair: CategoryIdPair, diff_text: str) -> None: ...
-    def save(self) -> None: ...

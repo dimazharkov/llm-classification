@@ -1,0 +1,50 @@
+skip_output:
+  - meta
+  - execution
+
+pre-commit:
+  piped: true
+  commands:
+    1-format:
+      glob: "*.py"
+      run: ./venv/bin/ruff check --fix {staged_files} && ./venv/bin/black {staged_files}
+      stage_fixed: true
+
+    2-check-style:
+      glob: "*.py"
+      run: ./venv/bin/black --check {staged_files} && ./venv/bin/ruff check {staged_files}
+
+    3-check-imports:
+      glob: "*.py"
+      run: ./venv/bin/lint-imports
+
+    4-check-type-hints:
+      tags: slowpoke
+      glob: "*.py"
+      run: ./venv/bin/mypy app settings tests
+
+    5-check-complexity:
+      tags: slowpoke
+      glob: "*.py"
+      run: ./venv/bin/flake8 {staged_files}
+
+pre-push:
+  parallel: true
+  commands:
+    check-style:
+      glob: "*.py"
+      run: ./venv/bin/black --check {push_files} && ./venv/bin/ruff check {push_files}
+
+    check-imports:
+      glob: "*.py"
+      run: ./venv/bin/lint-imports
+
+    check-type-hints:
+      tags: slowpoke
+      glob: "*.py"
+      run: ./venv/bin/mypy app settings tests
+
+    check-complexity:
+      tags: slowpoke
+      glob: "*.py"
+      run: ./venv/bin/flake8 {push_files}

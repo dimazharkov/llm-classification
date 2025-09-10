@@ -1,47 +1,68 @@
 [project]
-name = "myapp"
+name = "PhD Research Project by Dima Zharkov"
 version = "0.1.0"
 dependencies = [
     "typer>=0.9.0",
 ]
 
 [project.scripts]
-myapp = "interfaces.cli.main:main"
+myapp = "src.interfaces.cli.main:main"
+
+[tool.ruff]
+lint.extend-select = ["F", "I", "PL", "E", "W", "C4", "PT", "B", "T10", "SIM", "TID", "T20", "PGH", "S", "RET", "ERA", "PIE", "UP", "ASYNC", "ISC", "PERF", "DTZ", "TRY", "C90"]
+lint.ignore = ["S105", "S106", "S324", "PGH003", "TRY003", "TRY004", "PT001", "PT023", "ASYNC109", "PLR0912", "PLC0206", "PLC0105", "PLR2004", "PERF203"]
+line-length = 120
+output-format="concise"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "PLR2004", "PLR0913"]
+"src/app/resources/prompt_strategies/*" = ["E501"]
+
+[tool.ruff.lint.pylint]
+max-args = 15
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+
+[tool.ruff.lint.isort]
+force-wrap-aliases = true
+combine-as-imports = true
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "double"
 
 [tool.black]
-line-length = 121
+line-length = 120
 target-version = ['py312']
-
-[tool.isort]
-profile = "black"
-line_length = 121
 
 [tool.mypy]
 python_version = "3.12"
-ignore_missing_imports = true
-warn_return_any = false
+plugins = [
+    "pydantic.mypy"
+]
+allow_redefinition = false
+namespace_packages = true
 check_untyped_defs = true
-
-[tool.ruff]
-line-length = 121
-target-version = "py312"
-fix = true
-
-[tool.ruff.lint]
-select = ["ALL"]
-ignore = [
-  "D100",    # не требовать docstring у модуля
-  "D101",
-  "D102",
-  "D103",    # не требовать docstring у функций (часто мешает в Typer-командах)
-  "D104",    # не требовать docstring у __init__.py
-  "D107",
-  "PLR0913", # не ругаться на слишком много аргументов (Typer-команды)
-  "RUF001",  # не ругаться на русские буквы, похожие на латинские (например, с vs c)
-  "ERA001",  #  ERA001 Found commented-out code
-  "T201",  # print command
-  "D400",
-  "D205",
-  "D415",
-  "BLE001"
+disallow_untyped_decorators = false
+disallow_any_explicit = false
+disallow_any_generics = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+ignore_errors = false
+ignore_missing_imports = true
+implicit_reexport = false
+local_partial_types = true
+strict_optional = true
+strict_equality = true
+show_error_codes = true
+no_implicit_optional = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unreachable = true
+warn_no_return = true
+exclude = [
+    ".venv",
+    "tests/integration/*",
+    "tests/unit/*",
 ]
