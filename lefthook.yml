@@ -3,48 +3,44 @@ skip_output:
   - execution
 
 pre-commit:
-  piped: true
+  # piped убираем — команды не должны быть в одном пайплайне
   commands:
-    1-format:
+    01-format:
       glob: "*.py"
       run: ./venv/bin/ruff check --fix {staged_files} && ./venv/bin/black {staged_files}
       stage_fixed: true
 
-    2-check-style:
+    02-check-style:
       glob: "*.py"
       run: ./venv/bin/black --check {staged_files} && ./venv/bin/ruff check {staged_files}
 
-    3-check-imports:
-      glob: "*.py"
-      run: ./venv/bin/lint-imports
-
-    4-check-type-hints:
+    03-check-type-hints:
       tags: slowpoke
       glob: "*.py"
       run: ./venv/bin/mypy src
 
-    5-check-complexity:
+    04-check-complexity:
       tags: slowpoke
       glob: "*.py"
-      run: ./venv/bin/flake8 {staged_files}
+      run: ./venv/bin/flake8 --max-line-length 120 {staged_files}
 
 pre-push:
   parallel: true
   commands:
-    check-style:
+    01-check-style:
       glob: "*.py"
       run: ./venv/bin/black --check {push_files} && ./venv/bin/ruff check {push_files}
 
-    check-imports:
+    02-check-imports:
       glob: "*.py"
       run: ./venv/bin/lint-imports
 
-    check-type-hints:
+    03-check-type-hints:
       tags: slowpoke
       glob: "*.py"
       run: ./venv/bin/mypy src
 
-    check-complexity:
+    04-check-complexity:
       tags: slowpoke
       glob: "*.py"
-      run: ./venv/bin/flake8 {push_files}
+      run: ./venv/bin/flake8 --max-line-length 120 {push_files}
