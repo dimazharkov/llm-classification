@@ -179,3 +179,4 @@ docs/
 todo.txt
 
 *.DS_Store
+*.idea
