@@ -1,39 +1,70 @@
-# llm-classification
+# LLM-Driven Text Classification Experiments
 
-### Подготовка
-1. Выбрать 25 категорий из разных веток.
-2. Проверить объявления на адекватность.
-3. Для каждого объявления составить резюме на 7-10 слов.
-4. Для каждой категории посчитать Bag Of Words или TF-IDF и выбрать 20-40 самых частотных слов (ключевых слов).
+This project applies Large Language Models (LLMs) to classify short texts into predefined categories and compares three prompting strategies.
 
-### Эксперимент 1
-1. Берем 30 рандомных объявлений в цикле.
-2. В промпте просим выбрать для объявления одну из 25 категорий.
-3. Считаем статитстику: F1, Accuracy.
+## Methods
+- **Direct category selection (Zero-shot prompting)**  
+  The model selects one category from the full list without additional hints.
 
-Промпт: объявление + список категорий + выбрать одну категорию.
+- **Category selection with keywords (Few-shot prompting)**  
+  Each category is enriched with keywords aggregated from ads in that category; the model picks the single best category.
 
-### Эксперимент 2
-1. Берем 30 рандомных объявлений в цикле.
-2. В промпте просим выбрать для объявления одну из 25 категорий.
-3. Для категории даем название + ключевые слова собранные на этапе подготовки. 
-3. Считаем статитстику: F1, Accuracy.
+- **Top-3 selection + pairwise comparison (Prompt Chaining)**  
+  The model proposes three most likely categories from the keyword-augmented list, then a pairwise evaluator ranks these candidates using precomputed inter-category differences derived from ad texts.
 
-Промпт: объявление + список категорий с ключевыми словами + выбрать одну категорию.
+## Project Layout
+```
+src/
+static/
+.env
+requirements.txt
+Dockerfile
+Makefile
+```
 
-### Эксперимент 3
-1. Берем 30 рандомных объявлений в цикле.
-2. В промпте просим выбрать для объявления 5  из 25 наиболее подходящих категорий.
-3. Для категории даем название + ключевые слова собранные на этапе подготовки.
-4. Попарно сравниваем 5 выбранных категорий:
-   - для каждой пары категорий ищем в кэше описание различий
-   - если не найдено, формируем описание различий, промпт: категория1 + примеры объявлений категории1 + категория2 + примеры объявлений категории2, сохраням в кэш
-   - в промпте просим выбрать одну из двух категорий для объявления на основании различий между ними и уверенность
-   - выбираем категорию с самым большим скором
-5. Считаем статистику: F1, Accuracy.
+## Prerequisites
+- Docker and Make installed
+- API keys in `.env`
 
-Промпт: объявление + список категорий с ключевыми словами + выбрать 5 категорий.
+Example `.env` snippet:
+```env
+OPENAI_API_KEY=...
+GEMINI_API_KEY=...
+# add any other keys your client code expects
+```
 
-Промпт: категория1 + 10-20 объявлений1 + категория2 + 10-20 объявлении2 + найди разницу между категориями.
+## Dataset
+- Place the dataset into the `static/` directory.  
+  *https://github.com/dimazharkov/datasets/tree/main/ads-board/data*
 
-Промпт: объявление + 2 категории + разница между категориями + выбери категорию и уверенность.
+## Build Image & Create Container
+Build the image and create a long-running container (environment variables loaded from `.env`):
+```bash
+make create
+```
+
+## Running Experiments
+Run experiments inside the already running container:
+```bash
+make exec-one    # python -m src.main experiment one
+make exec-two    # python -m src.main experiment two
+make exec-three  # python -m src.main experiment three
+```
+
+## Outputs
+Results are written to the `static/` directory:
+- `experiment_one.json`
+- `experiment_two.json`
+- `experiment_three.json`
+
+## Maintenance
+```bash
+make logs    # follow logs
+make shell   # open interactive shell inside the container
+make stop    # stop the container
+make start   # start the container again
+```
+
+## Cleanup
+```bash
+make clean   # stop & remove container and image

@@ -6,10 +6,15 @@ BLACK := $(VENV)/bin/black
 RUFF := $(VENV)/bin/ruff
 MYPY := $(VENV)/bin/mypy
 FLAKE8 := $(VENV)/bin/flake8
-
 TARGETS := src
 
-.PHONY: venv install fmt fmt-check type-check complexity lint
+IMAGE_NAME := myapp
+TAG        := latest
+CONTAINER  := myapp
+
+.PHONY: venv install fmt fmt-check type-check complexity lint exp-one exp-two exp-three build create start start rmi clean logs shell run-one run-two run-three
+
+# local
 
 venv:
 	test -d $(VENV) || python3 -m venv $(VENV)
@@ -34,11 +39,45 @@ complexity:
 
 lint: fmt-check type-check
 
-experiment-one:
+exp-one:
 	python -m src.interfaces.cli.main experiment one
 
-experiment-two:
+exp-two:
 	python -m src.interfaces.cli.main experiment two
 
-experiment-three:
+exp-three:
 	python -m src.interfaces.cli.main experiment three
+
+# docker
+
+build:
+	docker build -t $(IMAGE_NAME):$(TAG) .
+
+create: build
+	docker run -d --name $(CONTAINER) --env-file .env $(IMAGE_NAME):$(TAG)
+
+start: create
+	docker start $(CONTAINER)
+
+stop:
+	docker stop $(CONTAINER)
+
+rmi:
+	- docker rmi $(IMAGE_NAME):$(TAG)
+
+clean: stop rmi
+
+logs:
+	docker logs -f $(CONTAINER)
+
+shell:
+	docker exec -it $(CONTAINER) bash
+
+run-one:
+	docker exec -it $(CONTAINER) python -m src.main experiment one
+
+run-two:
+	docker exec -it $(CONTAINER) python -m src.main experiment two
+
+run-three:
+	docker exec -it $(CONTAINER) python -m src.main experiment three

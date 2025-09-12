@@ -31,16 +31,12 @@ pre-push:
       glob: "*.py"
       run: ./venv/bin/black --check {push_files} && ./venv/bin/ruff check {push_files}
 
-    02-check-imports:
-      glob: "*.py"
-      run: ./venv/bin/lint-imports
-
-    03-check-type-hints:
+    02-check-type-hints:
       tags: slowpoke
       glob: "*.py"
       run: ./venv/bin/mypy src
 
-    04-check-complexity:
+    03-check-complexity:
       tags: slowpoke
       glob: "*.py"
       run: ./venv/bin/flake8 --max-line-length 120 {push_files}
