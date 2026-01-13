@@ -10,14 +10,14 @@ class NCategoryKwPrediction(PromptStrategy[dict[str, Any], list[str]]):
     def build_prompt(self, ctx: dict[str, Any]) -> str:
         return (
             "You are an advertisement classifier. "  # noqa: S608
-            "Analyze the advertisement text and select the three most suitable categories from the list.\n\n"
+            f"Analyze the advertisement text and select the {ctx['n_categories']} most suitable categories from the list.\n\n"
             "Advertisement:\n"
             f"{ctx['advert']['title']!r} {ctx['advert']['text']!r}\n\n"
             "List of categories with keywords:\n"
             f"{ctx['categories_with_kw']!r}\n\n"
             "Each category is provided in the format:\n"
             "- category: keyword1, keyword2, ...\n\n"
-            "Answer strictly with a list of three categories, one per line, without numbering, quotes, dashes, keywords, formatting, or explanations.\n\n"
+            f"Answer strictly with a list of {ctx['n_categories']} categories, one per line, without numbering, quotes, dashes, keywords, formatting, or explanations.\n\n"
         )
 
     def parse_response(self, raw: str) -> list[str]:

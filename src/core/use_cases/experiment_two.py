@@ -1,3 +1,8 @@
+"""
+    13 Jan 2026:
+    - Testing TF-IDF as the keywords
+"""
+
 from src.core.contracts.category_repository import CategoryRepository
 from src.core.contracts.llm_runner import LLMRunner
 from src.core.contracts.use_case import UseCase
@@ -14,7 +19,7 @@ class ExperimentTwoUseCase(UseCase):
     def run(self, advert: Advert) -> PredictedCategory | None:
         context = {
             "advert": advert_to_prompt_ctx(advert),
-            "categories_with_kw": self.category_repo.get_all_with_kw(),
+            "categories_with_kw": self.category_repo.get_all_with_kw(method="tfidf"),
         }
 
         predicted_category = self.llm_runner.run("category_kw_prediction", context)

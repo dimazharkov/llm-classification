@@ -1,3 +1,8 @@
+"""
+    13 Jan 2026:
+    - Testing top-5 category selection using BOW for keywords
+"""
+
 from src.core.contracts.category_repository import CategoryRepository
 from src.core.contracts.llm_runner import LLMRunner
 from src.core.domain.advert import Advert
@@ -14,6 +19,7 @@ class PredictNCategoriesUseCase:
         context = {
             "advert": advert_to_prompt_ctx(advert),
             "categories_with_kw": self.category_repo.get_all_with_kw(),
+            "n_categories": "five"
         }
 
         category_titles_list = self.llm_runner.run("n_category_kw_prediction", context)

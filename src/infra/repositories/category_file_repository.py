@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 from src.core.contracts.category_repository import CategoryRepository
 from src.core.domain.category import Category
@@ -14,8 +14,17 @@ class CategoryFileRepository(CategoryRepository):
     def get_all(self) -> list[Category]:
         return self.data
 
-    def get_all_with_kw(self) -> str:
+    def get_all_with_kw(self, method: Optional[str] = None) -> str:
+        # return "\n".join(f"- {c.title}: {', '.join(c.bow or [])}" for c in self.get_all())
+        if method == "tfidf":
+            return self.get_all_with_tfidf()
+        return self.get_all_with_bw()
+
+    def get_all_with_bw(self) -> str:
         return "\n".join(f"- {c.title}: {', '.join(c.bow or [])}" for c in self.get_all())
+
+    def get_all_with_tfidf(self) -> str:
+        return "\n".join(f"- {c.title}: {', '.join(c.tf_idf or [])}" for c in self.get_all())
 
     def get_titles_str(self) -> str:
         return ", ".join(category.title for category in self.data)
