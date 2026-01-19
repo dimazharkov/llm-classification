@@ -1,18 +1,16 @@
 import os
+from collections import Counter
 from pathlib import Path
-from typing import Any, Counter
+from typing import Any
 
 import numpy as np
+import xgboost as xgb
 from sentence_transformers import SentenceTransformer
-from sklearn.metrics import f1_score, classification_report, accuracy_score
+from sklearn.metrics import accuracy_score, classification_report, f1_score
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
-import xgboost as xgb
 
-from src.app.config.config import config
-from src.core.contracts.advert_repository import AdvertRepository
-from src.infra.repositories.json_file_repository import JsonFileRepository
-from src.infra.storage.os_helper import save_to_disc, load_from_disc
+from src.infra.storage.os_helper import load_from_disc, save_to_disc
 
 
 class PredictionService:
@@ -231,11 +229,12 @@ class PredictionService:
         - выводит статистику и метрики ТОЛЬКО для категорий, которые есть в inf.json (y_true)
         Возвращает weighted-F1 (или nan).
         """
+        from pathlib import Path
+
         import numpy as np
         import xgboost as xgb
-        from pathlib import Path
         from sentence_transformers import SentenceTransformer
-        from sklearn.metrics import f1_score, accuracy_score, classification_report
+        from sklearn.metrics import accuracy_score, classification_report, f1_score
 
         inf_data: list[dict[str, Any]] = load_from_disc(inf_path)
         if not inf_data:

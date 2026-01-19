@@ -2,7 +2,6 @@ import typer
 
 from src.app.config.config import config
 from src.app.services.prediction_service import PredictionService
-from src.infra.storage.os_helper import load_from_disc, save_to_disc
 
 app = typer.Typer()
 
