@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 from dataclasses import asdict, is_dataclass
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel
 
@@ -17,7 +17,10 @@ def to_jsonable(item: Any) -> Any:
 
 
 class BaseFileRepository(FileRepository[RepositoryItemType]):
-    def __init__(self, path: str) -> None:
+    def __init__(self, path: Optional[str] = None) -> None:
+        self.path = path
+
+    def set_path(self, path: str) -> None:
         self.path = path
 
     def save_list(self, data_list: Iterable[Any]) -> None:

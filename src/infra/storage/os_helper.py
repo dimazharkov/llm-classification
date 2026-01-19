@@ -1,17 +1,24 @@
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Union
 
 import pandas as pd
 from matplotlib.figure import Figure
 
 from src.app.config.config import config
 
+PathLike = Union[str, Path]
+
+def resolve_storage_path(file_path: PathLike) -> Path:
+    path = Path(file_path)
+    if path.is_absolute():
+        return path
+    relative_path = Path(str(file_path).lstrip("/\\"))
+    return config.static_path / relative_path
+
 
 def save_to_disc(data: pd.DataFrame | dict[str, Any], file_path: str | Path, indent: int = 4) -> None:
-    relative_path = Path(str(file_path).lstrip("/"))
-    full_file_path = config.static_path / relative_path
-
+    full_file_path = resolve_storage_path(file_path)
     full_file_path.parent.mkdir(parents=True, exist_ok=True)
 
     if isinstance(data, pd.DataFrame):
@@ -22,17 +29,13 @@ def save_to_disc(data: pd.DataFrame | dict[str, Any], file_path: str | Path, ind
 
 
 def save_plot_to_disc(plt: Figure, file_path: str | Path, dpi: int = 300) -> None:
-    relative_path = Path(str(file_path).lstrip("/"))
-    full_file_path = config.static_path / relative_path
-
+    full_file_path = resolve_storage_path(file_path)
     full_file_path.parent.mkdir(parents=True, exist_ok=True)
-
     plt.savefig(full_file_path, dpi=dpi)
 
 
 def load_from_disc(file_path: str | Path) -> Any:
-    relative_path = Path(str(file_path).lstrip("/"))
-    full_file_path = config.static_path / relative_path
+    full_file_path = resolve_storage_path(file_path)
 
     if not full_file_path.exists():
         raise FileNotFoundError(f"Missing file: {full_file_path}")
