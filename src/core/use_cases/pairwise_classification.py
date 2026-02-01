@@ -10,10 +10,9 @@ from src.core.types.category_prediction import PredictedCategory
 
 
 class PairwiseClassificationUseCase:
-    def __init__(self, llm_runner: LLMRunner, pairwise_evaluator: PairwiseEvaluator, rate_limit: float = 0.5) -> None:
+    def __init__(self, llm_runner: LLMRunner, pairwise_evaluator: PairwiseEvaluator) -> None:
         self.llm_runner = llm_runner
         self.pairwise_evaluator = pairwise_evaluator
-        self.rate_limit = rate_limit
 
     def run(self, advert: Advert, category_diff_repo: CategoryDiffRepository) -> PredictedCategory | None:
         if not category_diff_repo.all():
@@ -27,8 +26,6 @@ class PairwiseClassificationUseCase:
             self.pairwise_evaluator.add(
                 category_diff.category1.title, category_diff.category2.title, predicted_category
             )
-
-            time.sleep(self.rate_limit)
 
         category, score = self.pairwise_evaluator.best()
 

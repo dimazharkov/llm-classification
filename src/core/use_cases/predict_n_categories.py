@@ -1,4 +1,7 @@
 """
+    31 Jan 2026:
+    - Returns to top-3 categories
+
     13 Jan 2026:
     - Testing top-5 category selection using BOW for keywords
 """
@@ -19,7 +22,7 @@ class PredictNCategoriesUseCase:
         context = {
             "advert": advert_to_prompt_ctx(advert),
             "categories_with_kw": self.category_repo.get_all_with_kw(),
-            "n_categories": "five"
+            "n_categories": "three"
         }
 
         category_titles_list = self.llm_runner.run("n_category_kw_prediction", context)

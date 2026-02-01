@@ -15,7 +15,7 @@ from src.infra.repositories.json_file_repository import JsonFileRepository
 from src.infra.storage.os_helper import save_to_disc, load_from_disc
 
 
-class PredictionService:
+class XGBoostService:
     def __init__(self):
         self.embedder_name = 'lang-uk/ukr-paraphrase-multilingual-mpnet-base'
 
@@ -231,12 +231,6 @@ class PredictionService:
         - выводит статистику и метрики ТОЛЬКО для категорий, которые есть в inf.json (y_true)
         Возвращает weighted-F1 (или nan).
         """
-        import numpy as np
-        import xgboost as xgb
-        from pathlib import Path
-        from sentence_transformers import SentenceTransformer
-        from sklearn.metrics import f1_score, accuracy_score, classification_report
-
         inf_data: list[dict[str, Any]] = load_from_disc(inf_path)
         if not inf_data:
             raise ValueError("inf.json пустой или не найден")
@@ -300,282 +294,49 @@ class PredictionService:
 
         # Отчёт: ТОЛЬКО по категориям, которые реально есть в inf.json (в y_true)
         true_labels = np.unique(y_true_cid)
-        print(classification_report(
+        report_dict = classification_report(
             y_true_cid,
             y_pred_cid,
             labels=true_labels,
+            output_dict=True,
             zero_division=0,
-        ))
+        )
+        print(report_dict)
 
         # Доп. диагностика: доля предсказаний вне множества истинных категорий inf.json
         outside = ~np.isin(y_pred_cid, true_labels)
+        outside_mean = outside.mean()
+        outside_count = int(outside.sum())
+        total = int(len(outside))
+        outside_rate = float(outside_count / total) if total else 0.0
+
         print(
-            f"Predictions outside inf labels: {outside.mean():.1%} "
-            f"({int(outside.sum())}/{len(outside)})"
+            f"Predictions outside inf labels: {outside_mean:.1%} "
+            f"({outside_count}/{total})"
         )
 
-        return float(f1_w)
-
-
-    def predict_v3(self, inf_path: str, artifacts_path: str) -> float:
-        """
-        - загружает модель и артефакты
-        - загружает inf_path
-        - предсказывает категории
-        - сохраняет {inf_stem}_pred.json рядом с inf_path
-        - считает метрики корректно в пространстве category_id (а не индексов классов)
-        - подавляет UndefinedMetricWarning через zero_division=0
-        Возвращает weighted-F1 (или nan).
-        """
-        inf_data: list[dict[str, Any]] = load_from_disc(inf_path)
-        if not inf_data:
-            raise ValueError("inf.json пустой или не найден")
-
-        cfg = load_from_disc(f"{artifacts_path}/config.json")
-        classes = np.load(f"{artifacts_path}/classes.npy")  # это category_id в порядке индексов модели
-
-        # ВАЖНО: если модель у вас обучена через xgb.train(), используйте Booster.
-        # Если вы точно обучали через XGBClassifier.save_model(), оставьте XGBClassifier().
-        try:
-            booster = xgb.Booster()
-            booster.load_model(f"{artifacts_path}/xgb.json")
-            use_booster = True
-        except Exception:
-            use_booster = False
-
-        embedder = SentenceTransformer(cfg["embedder"])
-
-        texts = [self.build_text(a) for a in inf_data]
-        x = embedder.encode(
-            texts,
-            batch_size=64,
-            show_progress_bar=True,
-            convert_to_numpy=True,
-            normalize_embeddings=bool(cfg.get("normalize_embeddings", True)),
-        ).astype(np.float32)
-
-        if use_booster:
-            d = xgb.DMatrix(x)
-            proba = booster.predict(d)  # (N, K)
-        else:
-            from xgboost import XGBClassifier
-            clf = XGBClassifier()
-            clf.load_model(f"{artifacts_path}/xgb.json")
-            proba = clf.predict_proba(x)  # (N, K)
-
-        pred_idx = proba.argmax(axis=1)  # индексы классов 0..K-1
-        conf = proba.max(axis=1)
-        pred_category_id = classes[pred_idx].astype(np.int64)  # ПРЕДСКАЗАНИЯ В ПРОСТРАНСТВЕ category_id
-
-        # Сохраняем предсказания рядом с inf.json
-        inf_path_p = Path(inf_path)
-        out_path = inf_path_p.with_name(inf_path_p.stem + "_pred" + inf_path_p.suffix)
-        out_rows = []
-        for a, cid, c in zip(inf_data, pred_category_id, conf):
-            out_rows.append(
-                {
-                    "advert_id": a.get("advert_id"),
-                    "true_category_id": a.get("category_id"),
-                    "pred_category_id": int(cid),
-                    "confidence": float(c),
-                }
-            )
-        save_to_disc(out_rows, out_path)
-        print(f"Predictions saved to: {out_path}")
-
-        # Если нет ground truth — метрики не считаем
-        if any("category_id" not in a for a in inf_data):
-            print("Ground truth отсутствует: метрики не считаю.")
-            return float("nan")
-
-        y_true_cid = np.array([int(a["category_id"]) for a in inf_data], dtype=np.int64)
-        y_pred_cid = pred_category_id
-
-        # Метрики корректно считать по category_id (одна и та же система меток)
-        f1_w = f1_score(y_true_cid, y_pred_cid, average="weighted", zero_division=0)
-        f1_m = f1_score(y_true_cid, y_pred_cid, average="macro", zero_division=0)
-        acc = accuracy_score(y_true_cid, y_pred_cid)
-
-        print(f"INF accuracy: {acc:.3f}")
-        print(f"INF weighted-F1: {f1_w:.3f}")
-        print(f"INF macro-F1: {f1_m:.3f}")
-
-        # Отчёт печатаем только по тем классам, которые реально есть в truth или pred,
-        # чтобы не появлялись "левые" строки с support=0 из-за внешнего списка labels.
-        labels = np.unique(np.concatenate([y_true_cid, y_pred_cid]))
-        print(classification_report(y_true_cid, y_pred_cid, labels=labels, zero_division=0))
-
-        return float(f1_w)
-
-
-    def predict_v2(self, inf_path: str, artifacts_path: str) -> float:
-        """
-        - загружает модель и артефакты
-        - загружает inf_path
-        - предсказывает категории
-        - сохраняет {inf_stem}_pred.json рядом с inf_path
-        - выводит статистику по confidence
-        - считает и печатает метрики (если category_id есть в inf.json)
-        Возвращает weighted-F1 (или nan).
-        """
-        inf_data: list[dict[str, Any]] = load_from_disc(inf_path)
-        if not inf_data:
-            raise ValueError("inf.json пустой или не найден")
-
-        cfg = load_from_disc(f"{artifacts_path}/config.json")
-        classes = np.load(f"{artifacts_path}/classes.npy")
-
-        clf = XGBClassifier()
-        clf.load_model(f"{artifacts_path}/xgb.json")
-
-        embedder = SentenceTransformer(cfg["embedder"])
-
-        texts = [self.build_text(a) for a in inf_data]
-        x = embedder.encode(
-            texts,
-            batch_size=64,
-            show_progress_bar=True,
-            convert_to_numpy=True,
-            normalize_embeddings=bool(cfg.get("normalize_embeddings", True)),
-        ).astype(np.float32)
-
-        proba = clf.predict_proba(x)  # (N, K)
-        pred_idx = proba.argmax(axis=1)  # (N,)
-        conf = proba.max(axis=1)  # (N,)
-        pred_category_id = classes[pred_idx].astype(np.int64)
-
-        # Сохраним предсказания рядом, чтобы можно было смотреть ошибки
-        inf_path_p = Path(inf_path)
-        out_path = inf_path_p.with_name(inf_path_p.stem + "_pred" + inf_path_p.suffix)
-        out_rows = []
-        for a, cid, c in zip(inf_data, pred_category_id, conf):
-            out_rows.append(
-                {
-                    "advert_id": a.get("advert_id"),
-                    "true_category_id": a.get("category_id"),
-                    "pred_category_id": int(cid),
-                    "confidence": float(c),
-                }
-            )
-        save_to_disc(out_rows, out_path)
-        print(f"Predictions saved to: {out_path}")
-
-        # Статистика по уверенности (полезна даже без ground truth)
+        # Статистика по уверенности
         q10, q25, q50, q75, q90 = np.quantile(conf, [0.10, 0.25, 0.50, 0.75, 0.90])
-        low_thr = 0.50
         print(
             "Confidence quantiles:",
             f"p10={q10:.3f} p25={q25:.3f} p50={q50:.3f} p75={q75:.3f} p90={q90:.3f}"
         )
-        print(
-            f"Low-confidence (<{low_thr}): {(conf < low_thr).mean():.1%} "
-            f"({int((conf < low_thr).sum())}/{len(conf)})"
-        )
 
-        # Метрики считаем только если в inf есть истинные category_id
-        if any("category_id" not in a for a in inf_data):
-            print("Ground truth отсутствует: метрики не считаю.")
-            return float("nan")
+        payload = {
+            "accuracy": acc,
+            "weighted_f1": float(f1_w),
+            "macro_f1": float(f1_m),
+            "report": report_dict,
+            "conf_quantiles": [q10, q25, q50, q75, q90],
+            "outside_inf_labels": {
+                "count": outside_count,
+                "total": total,
+                "rate": outside_rate,  # 0..1
+                "mean": outside_mean,
+                "percent": outside_rate * 100.0,  # 0..100
+            }
+        }
 
-        y_true_raw = np.array([a["category_id"] for a in inf_data], dtype=np.int64)
-
-        # Приводим y_true к индексам 0..K-1 по тем же classes, что были на train
-        mapping = {int(cid): i for i, cid in enumerate(classes.tolist())}
-        try:
-            y_true = np.array([mapping[int(cid)] for cid in y_true_raw], dtype=np.int64)
-        except KeyError as e:
-            raise ValueError(f"В inf.json встретилась категория, которой не было в train: {e}")
-
-        y_pred = pred_idx.astype(np.int64)
-
-        f1_w = f1_score(y_true, y_pred, average="weighted")
-        f1_m = f1_score(y_true, y_pred, average="macro")
-        acc = (y_true == y_pred).mean()
-
-        print(f"INF accuracy: {acc:.3f}")
-        print(f"INF weighted-F1: {f1_w:.3f}")
-        print(f"INF macro-F1: {f1_m:.3f}")
-        print(classification_report(y_true, y_pred))
-
-        # Топ-5 худших классов (support >= 3) — краткая диагностическая сводка
-        rep = classification_report(y_true, y_pred, output_dict=True, zero_division=0)
-        per_class = []
-        for cls_str, metrics in rep.items():
-            if cls_str.isdigit():
-                support = int(metrics["support"])
-                if support >= 3:
-                    per_class.append((int(cls_str), float(metrics["f1-score"]), support))
-
-        per_class.sort(key=lambda t: (t[1], t[2]))
-        if per_class:
-            print("Worst classes (support>=3):")
-            for cls_idx, f1c, sup in per_class[:5]:
-                print(f"  class_idx={cls_idx} category_id={int(classes[cls_idx])} f1={f1c:.3f} support={sup}")
+        save_to_disc(payload, f"{artifacts_path}/predict_metrics.json")
 
         return float(f1_w)
-
-    def predict_v1(self, inf_path: str, artifacts_path: str) -> float:
-        """
-        - загружает модель и артефакты
-        - загружает data/source/inf.json
-        - предсказывает категории
-        - считает weighted F1 (если category_id есть в inf.json)
-        Возвращает weighted-F1.
-        """
-        inf_data: list[dict[str, Any]] = load_from_disc(inf_path)
-        if not inf_data:
-            raise ValueError("inf.json пустой или не найден")
-
-        cfg = load_from_disc(f"{artifacts_path}/config.json")
-        classes = np.load(f"{artifacts_path}/classes.npy")
-
-        clf = XGBClassifier()
-        clf.load_model(f"{artifacts_path}/xgb.json")
-
-        embedder = SentenceTransformer(cfg["embedder"])
-
-        texts = [self.build_text(a) for a in inf_data]
-        x = embedder.encode(
-            texts,
-            batch_size=64,
-            show_progress_bar=True,
-            convert_to_numpy=True,
-            normalize_embeddings=bool(cfg.get("normalize_embeddings", True)),
-        ).astype(np.float32)
-
-        proba = clf.predict_proba(x)
-        pred_idx = proba.argmax(axis=1)
-        pred_category_id = classes[pred_idx].astype(np.int64)
-
-        # Сохраним предсказания рядом, чтобы можно было смотреть ошибки
-        inf_path = Path(inf_path)
-        out_path = inf_path.with_name(inf_path.stem + "_pred" + inf_path.suffix)
-        out_rows = []
-        for a, cid in zip(inf_data, pred_category_id):
-            out_rows.append(
-                {
-                    "advert_id": a.get("advert_id"),
-                    "true_category_id": a.get("category_id"),
-                    "pred_category_id": int(cid),
-                }
-            )
-        save_to_disc(out_rows, out_path)
-
-        # Weighted F1 можно посчитать только если в inf есть истинные category_id
-        if any("category_id" not in a for a in inf_data):
-            return float("nan")
-
-        y_true_raw = np.array([a["category_id"] for a in inf_data], dtype=np.int64)
-
-        # Приводим y_true к индексам 0..K-1 по тем же classes, что были на train
-        # Если встретились unseen категории — это ошибка данных/сплита
-        mapping = {int(cid): i for i, cid in enumerate(classes.tolist())}
-        try:
-            y_true = np.array([mapping[int(cid)] for cid in y_true_raw], dtype=np.int64)
-        except KeyError as e:
-            raise ValueError(f"В inf.json встретилась категория, которой не было в train: {e}")
-
-        y_pred = pred_idx.astype(np.int64)
-
-        f1 = f1_score(y_true, y_pred, average="weighted")
-        return float(f1)

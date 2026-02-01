@@ -17,13 +17,11 @@ class CompareCategoryPairUseCase:
         category_repo: CategoryRepository,
         category_pair_repo: CategoryPairRepository,
         category_diff_repo: CategoryDiffRepository,
-        rate_limit: float = 0.5,
     ) -> None:
         self.llm_runner = llm_runner
         self.category_repo = category_repo
         self.category_pair_repo = category_pair_repo
         self.category_diff_repo = category_diff_repo
-        self.rate_limit = rate_limit
 
     def run(self, category_list: list[Category]) -> CategoryDiffRepository:
         if not category_list:
@@ -34,7 +32,6 @@ class CompareCategoryPairUseCase:
             diff_text = self.category_pair_repo.get(pair_key)
 
             if not diff_text:
-                time.sleep(self.rate_limit)
                 diff_text = self._prep_categories_diff(category1, category2)
                 self.category_pair_repo.add(pair_key, diff_text)
 

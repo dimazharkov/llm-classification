@@ -45,7 +45,12 @@ class Container(containers.DeclarativeContainer):
 
     strat_registry = providers.Factory(PromptRegistry, strategies=prompt_strategies)
 
-    llm_runner = providers.Factory(LLMClientRunner, llm_client=llm_client, strat_registry=strat_registry)
+    llm_runner = providers.Factory(
+        LLMClientRunner,
+        llm_client=llm_client,
+        strat_registry=strat_registry,
+        delay_s=config.delay_s
+    )
 
     classification_evaluator = providers.Singleton(ClassificationEvaluator)
     category_diff_repo = providers.Singleton(CategoryDiffFileRepository)
@@ -78,13 +83,11 @@ class Container(containers.DeclarativeContainer):
         category_repo=category_repo,
         category_pair_repo=category_pair_repo,
         category_diff_repo=category_diff_repo,
-        rate_limit=config.rate_limit,
     )
     pairwise_classification_use_case = providers.Factory(
         PairwiseClassificationUseCase,
         llm_runner=llm_runner,
         pairwise_evaluator=pairwise_evaluator,
-        rate_limit=config.rate_limit,
     )
     experiment_three = providers.Factory(
         ExperimentThreeUseCase,

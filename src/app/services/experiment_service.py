@@ -1,6 +1,6 @@
 import random
 import time
-from typing import Any
+from typing import Any, Optional
 
 from src.core.contracts.advert_repository import AdvertRepository
 from src.core.contracts.experiment_repository import ExperimentRepository
@@ -19,7 +19,7 @@ class ExperimentService:
         self.experiment_repo = experiment_repo
         self.evaluator = evaluator
 
-    def run(self, use_case: UseCase, num_cases: int = 30, rate_limit: float = 0.5) -> None:
+    def run(self, use_case: UseCase, num_cases: Optional[int] = None) -> None:
         processed: list[Any] = []
         processed_count = 0
 
@@ -42,8 +42,6 @@ class ExperimentService:
 
             percent = (i / len(adverts)) * 100
             print(f"[{i} of {len(adverts)}] processed: {percent:.1f}%")  # noqa: T201
-
-            time.sleep(rate_limit)
 
         classification_metrics = self.evaluator.calculate(processed)
         processed.append(classification_metrics)

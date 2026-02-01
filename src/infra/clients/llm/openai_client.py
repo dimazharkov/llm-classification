@@ -12,7 +12,7 @@ from src.core.contracts.llm_client import LLMClient
 class OpenAIClient(LLMClient):
     def __init__(
         self,
-        model_name: str = "gpt-4.1-mini",
+        model_name: str = "gpt-5-mini", # "gpt-4.1-mini",
         temperature: float = 0.1,
         max_tokens: int = 200,
     ) -> None:

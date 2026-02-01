@@ -280,15 +280,73 @@ def _plot_macro_weighted_over_time(global_df: pd.DataFrame, out_path: Path) -> P
     ax.plot(x, global_df["weighted_f1"], marker="o", label="Weighted F1")
     ax.set_xticks(x)
     ax.set_xticklabels(global_df["experiment"], rotation=0)
-    ax.set_ylim(0.5, 1.0)
+    ax.set_ylim(0.5, 0.85)
+    # ax.set_yticks(np.arange(0.52, 0.84, 0.02))
     ax.set_ylabel("F1")
     ax.set_title("Macro / Weighted F1 over experiments")
     ax.grid(True, linestyle=":", alpha=0.5)
-    ax.legend()
+    ax.legend(loc="upper left")
     fig.tight_layout()
     fig.savefig(out_path, bbox_inches="tight", dpi=150)
     plt.close(fig)
     return out_path
+
+def _plot_macro_weighted_bars_sorted(global_df: pd.DataFrame, out_path: Path) -> Path:
+    # сортируем по weighted_f1 по убыванию
+    df = global_df.sort_values("weighted_f1", ascending=False).reset_index(drop=True)
+
+    labels = df["experiment"].astype(str).to_list()
+    macro = df["macro_f1"].to_numpy()
+    weighted = df["weighted_f1"].to_numpy()
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+
+    x = np.arange(len(df))
+    width = 0.2  # ширина каждого бара
+    inner_gap = 0.04  # зазор МЕЖДУ барами внутри группы
+
+    left_x = x - (width / 2 + inner_gap / 2)
+    right_x = x + (width / 2 + inner_gap / 2)
+
+    bars_w = ax.bar(left_x, weighted, width, color="green", label="Weighted F1")
+    bars_m = ax.bar(right_x, macro, width, color="red", label="Macro F1")
+    #
+    # bars_w = ax.bar(x - width / 2, weighted, width, label="Weighted F1", color="green")
+    # bars_m = ax.bar(x + width / 2, macro, width, label="Macro F1", color="red")
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, rotation=0)
+    ax.set_ylabel("F1")
+    ax.set_title("Macro / Weighted F1 (sorted by Weighted)")
+    ax.grid(True, axis="y", linestyle=":", alpha=0.5)
+    ax.legend(loc="upper right")
+
+    # подписи над столбиками
+    def _annotate(bars):
+        for b in bars:
+            h = b.get_height()
+            ax.annotate(
+                f"{h:.3f}",
+                (b.get_x() + b.get_width() / 2, h),
+                xytext=(0, 3),
+                textcoords="offset points",
+                ha="center",
+                va="bottom",
+                fontsize=5,
+            )
+
+    _annotate(bars_w)
+    _annotate(bars_m)
+
+    # чуть места сверху под подписи
+    y_max = float(np.max([macro.max(), weighted.max()]))
+    ax.set_ylim(0.0, max(1.0, y_max + 0.05))
+
+    fig.tight_layout()
+    fig.savefig(out_path, bbox_inches="tight", dpi=150)
+    plt.close(fig)
+    return out_path
+
 
 def _plot_delta_bars(per_class_df: pd.DataFrame, col_delta: str, title: str, out_path: Path) -> Path:
     dd = per_class_df[["label", col_delta]].dropna().sort_values(col_delta, ascending=True)
@@ -452,8 +510,13 @@ def save_global_results(global_res: Dict[str, Any], out_dir: str | Path) -> Dict
     # Берём только строки-эксперименты (без дельт) для линии
     mask_exp = ~global_summary["experiment"].str.startswith("Δ ")
     mw_df = global_summary.loc[mask_exp, ["experiment", "macro_f1", "weighted_f1"]]
+
     paths["macro_weighted_over_time.png"] = _plot_macro_weighted_over_time(
         mw_df, out / "macro_weighted_over_time.png"
+    )
+
+    paths["macro_weighted_bars_sorted.png"] = _plot_macro_weighted_bars_sorted(
+        mw_df, out / "macro_weighted_bars_sorted.png"
     )
 
     return paths
